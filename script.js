@@ -2,1436 +2,1613 @@
 
 const $ = id => document.getElementById(id);
 
-const GAMES = [
+const GAME_DATA = {
+  lava: {
+    name: "Floor Is Lava",
+    description: "Jump across moving platforms while the lava rises. Hesitate and you're toast.",
+    category: "action",
+    categoryLabel: "ACTION",
+    emoji: "🌋",
+    art: "art-lava",
+    sticker: "HOT HOT HOT",
+    tag: "JUMP & SURVIVE",
+    color: "#ffb15b",
+    controls: "A/D or ←/→ to move. Space or ↑ to jump. You get a double jump.",
+    instructions: "Keep moving, land on platforms, and avoid the lava. Stay alive as long as possible.",
+    overlay: "THE FLOOR IS<br>VERY, VERY HOT.",
+    overlayDescription: "Keep hopping across platforms. The lava doesn't care about your plans."
+  },
+  snack: {
+    name: "Snack Snatcher",
+    description: "Raid the kitchen for snacks while little monsters try to steal your lunch.",
+    category: "action",
+    categoryLabel: "ACTION",
+    emoji: "🍟",
+    art: "art-snack",
+    sticker: "FREE FOOD!",
+    tag: "GRAB & ESCAPE",
+    color: "#89e9a2",
+    controls: "Move with WASD or arrow keys. Collect all the snacks and avoid monsters.",
+    instructions: "Collect every snack in the maze. You have three lives, so don't get caught.",
+    overlay: "THE FRIDGE<br>IS UNGUARDED.",
+    overlayDescription: "Collect the food. Avoid the hungry monsters. This is a very serious mission."
+  },
+  button: {
+    name: "Don't Press That",
+    description: "Read the rule, pick the right button, and try not to panic when the timer starts.",
+    category: "chaos",
+    categoryLabel: "CHAOS",
+    emoji: "🔴",
+    art: "art-button",
+    sticker: "BAD IDEA",
+    tag: "REACTION CHAOS",
+    color: "#ff8fba",
+    controls: "Click the correct button before the timer runs out. Keyboard: press 1, 2, or 3.",
+    instructions: "Follow the changing instruction. Each correct choice earns points. Wrong choices break your streak.",
+    overlay: "IT'S PROBABLY<br>FINE TO PRESS.",
+    overlayDescription: "Eight rounds. Changing rules. Questionable decisions. Read before you click."
+  },
+  astro: {
+    name: "Alien Delivery",
+    description: "Launch space parcels into moving planetary targets. Intergalactic delivery is hard.",
+    category: "chaos",
+    categoryLabel: "CHAOS",
+    emoji: "👽",
+    art: "art-astro",
+    sticker: "SPACE MAIL",
+    tag: "AIM & DELIVER",
+    color: "#8d86ff",
+    controls: "Click or tap where you want to launch your parcel. Aim ahead of the moving planet.",
+    instructions: "Land six parcels in the moving target. Your parcels follow gravity, so aim carefully.",
+    overlay: "DELIVERY IN<br>ANOTHER GALAXY.",
+    overlayDescription: "The customers are waiting. Launch your parcels and aim for the moving planet."
+  },
+  dash: {
+    name: "Color Dash",
+    description: "Switch lanes to match the gates. The speed keeps climbing. So does the panic.",
+    category: "action",
+    categoryLabel: "ACTION",
+    emoji: "🏁",
+    art: "art-dash",
+    sticker: "ZOOM",
+    tag: "SPEED & SWITCH",
+    color: "#65dfff",
+    controls: "Press 1, 2, or 3 to change colors. On mobile, tap a lane.",
+    instructions: "Match your color with each incoming gate. Wrong color means game over.",
+    overlay: "MATCH IT OR<br>GET WRECKED.",
+    overlayDescription: "Switch to the correct lane before each gate reaches you. It gets faster."
+  },
+  memory: {
+    name: "Brain Freeze",
+    description: "Memorize the ridiculous sequence and repeat it correctly. Don't let the brain goblin win.",
+    category: "brain",
+    categoryLabel: "BRAIN STUFF",
+    emoji: "🧠",
+    art: "art-memory",
+    sticker: "THINK FAST",
+    tag: "MEMORY CHALLENGE",
+    color: "#ffdf68",
+    controls: "Watch the tiles light up. Then click or tap them in the same order.",
+    instructions: "Repeat increasingly long sequences. One wrong tile ends your run.",
+    overlay: "YOUR BRAIN<br>IS ON THE CLOCK.",
+    overlayDescription: "Watch the sequence carefully. Then repeat it from memory. Easy, right?"
+  }
+};
+
+const QUESTS = [
   {
-    id: "runner",
-    title: "Neon Odyssey",
-    category: "Arcade",
-    filter: "arcade",
-    art: "runner",
-    symbol: "N",
-    tag: "FEATURED",
-    description: "Run through a neon city, dodge dangerous obstacles, and collect energy.",
-    mission: "Survive as long as possible. Jump over hazards and collect glowing coins.",
-    tip: "Press Space, W, Up, or tap the game to jump. You can double jump.",
-    controls: "SPACE / W / ↑ / TAP"
+    id: "play",
+    emoji: "🎮",
+    title: "Touch grass? Never.",
+    description: "Finish three game sessions",
+    goal: 3,
+    reward: 30
   },
   {
-    id: "jumper",
-    title: "Skybound",
-    category: "Skill",
-    filter: "skill",
-    art: "jumper",
-    symbol: "↑",
-    tag: "PLATFORMER",
-    description: "Scale floating platforms, find hidden gems, and reach the highest point.",
-    mission: "Jump between platforms, collect gems, and avoid falling.",
-    tip: "Use A and D or the arrow keys to move. Press Space, W, or Up to jump.",
-    controls: "A / D / SPACE / ↑"
+    id: "coins",
+    emoji: "🪙",
+    title: "Pocket change",
+    description: "Collect ten coins in games",
+    goal: 10,
+    reward: 25
   },
   {
-    id: "crystal",
-    title: "Crystal Quest",
-    category: "Skill",
-    filter: "skill",
-    art: "crystal",
-    symbol: "◇",
-    tag: "EXPLORATION",
-    description: "Explore a mysterious maze, collect crystals, and avoid the guardians.",
-    mission: "Collect every crystal in the maze without being caught.",
-    tip: "Use WASD or the arrow keys to move through the maze.",
-    controls: "WASD / ARROW KEYS"
+    id: "variety",
+    emoji: "🧭",
+    title: "Can't pick one",
+    description: "Try three different games",
+    goal: 3,
+    reward: 40
   }
 ];
 
-const ACHIEVEMENTS = [
-  {
-    id: "first",
-    icon: "✦",
-    title: "First Steps",
-    description: "Finish your first game session.",
-    reward: 10,
-    check: s => s.gamesPlayed >= 1
-  },
-  {
-    id: "collector",
-    icon: "◇",
-    title: "Coin Collector",
-    description: "Collect 50 coins in total.",
-    reward: 20,
-    check: s => s.coins >= 50
-  },
-  {
-    id: "explorer",
-    icon: "⌘",
-    title: "World Explorer",
-    description: "Discover all three worlds.",
-    reward: 25,
-    check: s => GAMES.every(g => s.worlds.includes(g.id))
-  },
-  {
-    id: "veteran",
-    icon: "♜",
-    title: "Dedicated Player",
-    description: "Finish 10 game sessions.",
-    reward: 30,
-    check: s => s.gamesPlayed >= 10
-  },
-  {
-    id: "level5",
-    icon: "↑",
-    title: "Rising Star",
-    description: "Reach level 5.",
-    reward: 35,
-    check: s => levelOf(s.xp) >= 5
-  },
-  {
-    id: "runner100",
-    icon: "»",
-    title: "Speed Demon",
-    description: "Score 100 in Neon Odyssey.",
-    reward: 20,
-    check: s => s.bests.runner >= 100
-  },
-  {
-    id: "sky100",
-    icon: "☁",
-    title: "Sky High",
-    description: "Score 100 in Skybound.",
-    reward: 20,
-    check: s => s.bests.jumper >= 100
-  },
-  {
-    id: "crystal100",
-    icon: "✧",
-    title: "Treasure Hunter",
-    description: "Score 100 in Crystal Quest.",
-    reward: 20,
-    check: s => s.bests.crystal >= 100
-  }
+const BADGES = [
+  { id: "first", emoji: "🎮", name: "First game", condition: s => s.gamesPlayed >= 1 },
+  { id: "coins", emoji: "🪙", name: "Coin goblin", condition: s => s.coins >= 25 },
+  { id: "explorer", emoji: "🌈", name: "Explorer", condition: s => s.seenGames.length >= 4 },
+  { id: "winner", emoji: "🏆", name: "Winner", condition: s => Object.values(s.wins).some(v => v > 0) },
+  { id: "dedicated", emoji: "🔥", name: "On a roll", condition: s => s.gamesPlayed >= 10 },
+  { id: "memory", emoji: "🧠", name: "Big brain", condition: s => (s.best.memory || 0) >= 5 }
 ];
+
+const AVATARS = ["👾", "🐸", "👽", "🦆", "😎"];
+const SAVE_KEY = "aliaBloxSaveV2";
 
 function freshState() {
   return {
     name: "Player",
-    xp: 0,
+    avatar: "👾",
     coins: 0,
+    xp: 0,
     gamesPlayed: 0,
-    completed: 0,
-    worlds: [],
-    favorites: [],
+    best: {},
+    wins: {},
+    questProgress: { play: 0, coins: 0, variety: 0 },
+    claimed: {},
+    seenGames: [],
     achievements: [],
-    bests: {
-      runner: 0,
-      jumper: 0,
-      crystal: 0
-    },
-    lastGame: "runner"
+    dailyKey: new Date().toDateString()
   };
 }
 
-function levelOf(xp) {
-  return Math.floor(Math.max(0, Number(xp) || 0) / 100) + 1;
-}
-
 function loadState() {
+  const base = freshState();
+
   try {
-    const raw = localStorage.getItem("aliaBloxSave");
-    if (!raw) return freshState();
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return base;
 
-    const saved = JSON.parse(raw);
-    if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
-      return freshState();
+    const stored = JSON.parse(raw);
+    if (!stored || typeof stored !== "object") return base;
+
+    const result = { ...base, ...stored };
+    result.best = stored.best && typeof stored.best === "object" ? stored.best : {};
+    result.wins = stored.wins && typeof stored.wins === "object" ? stored.wins : {};
+    result.claimed = stored.claimed && typeof stored.claimed === "object" ? stored.claimed : {};
+    result.questProgress = {
+      ...base.questProgress,
+      ...(stored.questProgress && typeof stored.questProgress === "object" ? stored.questProgress : {})
+    };
+    result.seenGames = Array.isArray(stored.seenGames) ? stored.seenGames.filter(id => GAME_DATA[id]) : [];
+    result.achievements = Array.isArray(stored.achievements) ? stored.achievements : [];
+    result.coins = Math.max(0, Number(result.coins) || 0);
+    result.xp = Math.max(0, Number(result.xp) || 0);
+    result.gamesPlayed = Math.max(0, Number(result.gamesPlayed) || 0);
+    result.name = typeof result.name === "string" ? result.name.slice(0, 18) : "Player";
+    result.avatar = AVATARS.includes(result.avatar) ? result.avatar : "👾";
+
+    if (result.dailyKey !== new Date().toDateString()) {
+      result.dailyKey = new Date().toDateString();
+      result.questProgress = { play: 0, coins: 0, variety: result.seenGames.length };
+      result.claimed = {};
     }
 
-    const defaults = freshState();
-    const state = { ...defaults, ...saved };
-
-    state.name = typeof state.name === "string"
-      ? state.name.trim().slice(0, 18) || "Player"
-      : "Player";
-
-    for (const key of ["xp", "coins", "gamesPlayed", "completed"]) {
-      state[key] = Math.max(0, Math.floor(Number(state[key]) || 0));
-    }
-
-    const validIds = GAMES.map(g => g.id);
-
-    state.worlds = Array.isArray(state.worlds)
-      ? [...new Set(state.worlds.filter(id => validIds.includes(id)))]
-      : [];
-
-    state.favorites = Array.isArray(state.favorites)
-      ? [...new Set(state.favorites.filter(id => validIds.includes(id)))]
-      : [];
-
-    state.achievements = Array.isArray(state.achievements)
-      ? [...new Set(state.achievements.filter(id =>
-          ACHIEVEMENTS.some(a => a.id === id)
-        ))]
-      : [];
-
-    const oldBests = state.bests && typeof state.bests === "object"
-      ? state.bests
-      : {};
-
-    state.bests = {};
-    for (const id of validIds) {
-      state.bests[id] = Math.max(0, Math.floor(Number(oldBests[id]) || 0));
-    }
-
-    if (!validIds.includes(state.lastGame)) {
-      state.lastGame = "runner";
-    }
-
-    return state;
-  } catch (error) {
-    console.warn("The saved game data could not be loaded.", error);
-    return freshState();
+    return result;
+  } catch {
+    return base;
   }
 }
 
 let state = loadState();
-let activePage = "home";
-let activeGame = null;
-let gameSession = null;
-let activeFilter = "all";
-let soundEnabled = false;
-let audioContext = null;
-let toastTimer = null;
-let achievementQueue = [];
-let achievementBusy = false;
+let currentPage = "home";
+let currentGame = "lava";
+let session = null;
+let animationFrame = 0;
+let toastTimer = 0;
+let keys = {};
+let pointerHeld = false;
 
 function saveState() {
   try {
-    localStorage.setItem("aliaBloxSave", JSON.stringify(state));
-  } catch (error) {
-    console.warn("Progress could not be saved.", error);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  } catch {
+    notify("Progress couldn't be saved in this browser.");
   }
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
+function levelFromXP(xp) {
+  return Math.floor(Math.max(0, xp) / 100) + 1;
 }
 
-function getGame(id) {
-  return GAMES.find(g => g.id === id) || GAMES[0];
+function levelProgress(xp) {
+  return Math.max(0, xp) % 100;
 }
 
 function notify(message) {
   const toast = $("toast");
-  if (!toast) return;
-
   toast.textContent = message;
   toast.classList.add("show");
-
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2800);
-}
-
-function renderHeader() {
-  const initial = (state.name.trim()[0] || "P").toUpperCase();
-
-  $("coinCount").textContent = state.coins.toLocaleString();
-  $("topName").textContent = state.name;
-  $("topAvatar").textContent = initial;
-  $("sideAvatar").textContent = initial;
-  $("sideName").textContent = state.name;
-  $("sideLevel").textContent = "Level " + levelOf(state.xp) + " explorer";
-  $("favoriteCount").textContent = state.favorites.length;
-}
-
-function renderProgress() {
-  const level = levelOf(state.xp);
-  const progress = state.xp % 100;
-
-  $("homeLevel").textContent = level;
-  $("homeCoins").textContent = state.coins.toLocaleString();
-  $("homeGames").textContent = state.completed;
-  $("homeWorlds").textContent = state.worlds.length;
-
-  $("homeLevelProgress").style.width = progress + "%";
-  $("homeXP").textContent = progress + " / 100 XP";
-
-  $("levelLabel")?.textContent;
-  $("levelProgress").style.width = progress + "%";
-  $("xpLabel").textContent = state.xp + " XP";
-  $("xpNext").textContent = (100 - progress) + " XP to next level";
-
-  $("levelAvatar").textContent = (state.name[0] || "P").toUpperCase();
-  $("levelPlayerName").textContent = state.name;
-  $("levelPlayerText").textContent = "Level " + level;
-  $("levelNumber").textContent = "LV. " + level;
-}
-
-function gameCardHTML(game) {
-  const favorite = state.favorites.includes(game.id);
-
-  return `
-    <article class="game-card">
-      <div class="game-art art-${game.art}">
-        <span class="art-label">${game.tag}</span>
-        <span class="art-symbol" aria-hidden="true">${game.symbol}</span>
-        <button
-          class="favorite-button ${favorite ? "is-favorite" : ""}"
-          data-favorite="${game.id}"
-          aria-label="${favorite ? "Remove from" : "Add to"} favorites"
-          aria-pressed="${favorite}"
-        >${favorite ? "♥" : "♡"}</button>
-      </div>
-      <div class="game-info">
-        <div class="game-title-row">
-          <h3>${escapeHTML(game.title)}</h3>
-          <span class="game-type">${game.category.toUpperCase()}</span>
-        </div>
-        <p>${escapeHTML(game.description)}</p>
-        <div class="game-meta">
-          <span class="game-best">Best: ${(state.bests[game.id] || 0).toLocaleString()}</span>
-          <button class="play-card-button" data-play="${game.id}">Play now →</button>
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-function renderGameGrids() {
-  $("homeGameGrid").innerHTML = GAMES.map(gameCardHTML).join("");
-
-  const query = $("gameSearch").value.trim().toLowerCase();
-
-  const filtered = GAMES.filter(game => {
-    const searchable = [
-      game.title,
-      game.description,
-      game.category,
-      game.tag
-    ].join(" ").toLowerCase();
-
-    return searchable.includes(query) &&
-      (activeFilter === "all" || game.filter === activeFilter);
-  });
-
-  $("libraryGameGrid").innerHTML = filtered.map(gameCardHTML).join("");
-  $("noGames").classList.toggle("hidden", filtered.length > 0);
-  $("libraryCount").textContent = filtered.length;
-
-  const favorites = GAMES.filter(game => state.favorites.includes(game.id));
-
-  $("favoriteGameGrid").innerHTML = favorites.map(gameCardHTML).join("");
-  $("noFavorites").classList.toggle("hidden", favorites.length > 0);
-  $("favoritesTotal").textContent = favorites.length;
-}
-
-function renderContinue() {
-  const game = getGame(state.lastGame);
-
-  $("continueContent").innerHTML = `
-    <div class="continue-item">
-      <div class="continue-art">${game.symbol}</div>
-      <div class="continue-details">
-        <strong>${escapeHTML(game.title)}</strong>
-        <span>Personal best: ${(state.bests[game.id] || 0).toLocaleString()}</span>
-      </div>
-      <button class="play-card-button" data-play="${game.id}">Play →</button>
-    </div>
-  `;
-}
-
-function renderProfile() {
-  const initial = (state.name[0] || "P").toUpperCase();
-
-  $("profileDisplayName").textContent = state.name;
-  $("profileAvatar").textContent = initial;
-  $("profileLevel").textContent = "Level " + levelOf(state.xp) + " explorer";
-  $("profileXP").textContent = state.xp.toLocaleString();
-  $("profileCoins").textContent = state.coins.toLocaleString();
-  $("profileGames").textContent = state.completed;
-  $("profileWorlds").textContent = state.worlds.length;
-  $("profileWorldBadge").textContent = state.worlds.length + " WORLDS";
-
-  if (document.activeElement !== $("playerName")) {
-    $("playerName").value = state.name;
-  }
-}
-
-function renderAchievements() {
-  const unlocked = state.achievements.length;
-  const total = ACHIEVEMENTS.length;
-  const percent = Math.round((unlocked / total) * 100);
-
-  $("achievementCount").textContent = unlocked + " / " + total;
-  $("achievementProgress").style.width = percent + "%";
-  $("achievementPercent").textContent = percent + "% complete";
-
-  $("achievementSummary").textContent = unlocked === total
-    ? "You've unlocked every achievement!"
-    : unlocked === 0
-      ? "Your journey starts here."
-      : "You've unlocked " + unlocked + " milestone" + (unlocked === 1 ? "." : "s.");
-
-  $("achievementGrid").innerHTML = ACHIEVEMENTS.map(item => {
-    const isUnlocked = state.achievements.includes(item.id);
-
-    return `
-      <article class="achievement-card ${isUnlocked ? "unlocked" : ""}">
-        <div class="achievement-icon">${item.icon}</div>
-        <div>
-          <strong>${escapeHTML(item.title)}</strong>
-          <p>${escapeHTML(item.description)}</p>
-          <div class="achievement-status">
-            ${isUnlocked ? "Unlocked · +" + item.reward + " coins" : "Locked"}
-          </div>
-        </div>
-      </article>
-    `;
-  }).join("");
-}
-
-function renderAll() {
-  renderHeader();
-  renderProgress();
-  renderGameGrids();
-  renderContinue();
-  renderProfile();
-  renderAchievements();
-
-  if (activeGame) renderHUD();
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
 }
 
 function showPage(page) {
-  const validPages = [
-    "home", "games", "favorites",
-    "achievements", "profile", "play"
-  ];
+  if (!$(page)) return;
 
-  if (!validPages.includes(page)) return;
-
-  if (page !== "play") stopSession();
-
-  activePage = page;
-
-  const labels = {
-    home: "Home",
-    games: "Discover games",
-    favorites: "Favorites",
-    achievements: "Achievements",
-    profile: "My profile",
-    play: "Playing"
-  };
+  stopLoop();
+  currentPage = page;
 
   document.querySelectorAll(".page").forEach(section => {
-    section.classList.toggle("hidden", section.id !== page + "Page");
+    section.classList.toggle("active", section.id === page);
   });
 
-  document.querySelectorAll(".nav-item").forEach(button => {
+  document.querySelectorAll(".navbtn").forEach(button => {
     button.classList.toggle("active", button.dataset.page === page);
   });
 
-  $("pageCrumb").textContent = labels[page];
-  $("sidebar").classList.remove("open");
+  if (page === "home") renderHome();
+  if (page === "library") renderLibrary();
+  if (page === "quests") renderQuests();
+  if (page === "profile") renderProfile();
+  if (page === "play") renderGameScreen();
 
-  renderAll();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function toggleFavorite(id) {
-  if (!GAMES.some(game => game.id === id)) return;
-
-  if (state.favorites.includes(id)) {
-    state.favorites = state.favorites.filter(item => item !== id);
-    notify("Removed from favorites.");
-  } else {
-    state.favorites.push(id);
-    notify("Added to favorites.");
-  }
-
-  saveState();
-  renderAll();
+function renderTop() {
+  $("topName").textContent = state.name;
+  $("topAvatar").textContent = state.avatar;
+  $("topCoins").textContent = state.coins;
+  $("sidePlayerName").textContent = state.name;
+  $("sidePlayerLevel").textContent = levelFromXP(state.xp);
+  $("sideXPBar").style.width = levelProgress(state.xp) + "%";
 }
 
-function enterGame(id) {
-  stopSession();
+function renderCard(id) {
+  const game = GAME_DATA[id];
+  const card = document.createElement("article");
+  card.className = "game-card";
 
-  activeGame = getGame(id);
-  state.lastGame = activeGame.id;
-  state.worlds = [...new Set([...state.worlds, activeGame.id])];
+  const best = Number(state.best[id]) || 0;
 
-  saveState();
+  const art = document.createElement("div");
+  art.className = "game-art " + game.art;
 
-  $("activeGameTitle").textContent = activeGame.title;
-  $("activeGameDescription").textContent = activeGame.description;
-  $("gameCategory").textContent = activeGame.category.toUpperCase();
-  $("stageName").textContent = "WORLD 0" + (GAMES.findIndex(g => g.id === id) + 1);
-  $("missionTitle").textContent = activeGame.title;
-  $("missionText").textContent = activeGame.mission;
-  $("gameTip").textContent = activeGame.tip;
-  $("controlText").textContent = activeGame.controls;
-  $("overlayControls").textContent = activeGame.controls;
-  $("overlayTitle").textContent = "Enter " + activeGame.title + ".";
-  $("overlayDescription").textContent = activeGame.mission;
-  $("startGame").textContent = "Start playing →";
-  $("overlayMark").textContent = activeGame.symbol;
+  const stickerTop = document.createElement("span");
+  stickerTop.className = "sticker sticker-top";
+  stickerTop.textContent = game.sticker;
 
-  $("gameOverlay").classList.remove("hidden");
+  const emoji = document.createElement("span");
+  emoji.className = "game-emoji";
+  emoji.textContent = game.emoji;
 
-  drawPreview(activeGame.id);
-  showPage("play");
-  renderHUD();
-  checkAchievements();
+  const stickerBottom = document.createElement("span");
+  stickerBottom.className = "sticker sticker-bottom";
+  stickerBottom.textContent = game.tag;
+
+  art.append(stickerTop, emoji, stickerBottom);
+
+  const info = document.createElement("div");
+  info.className = "game-info";
+
+  const title = document.createElement("h3");
+  title.textContent = game.name;
+
+  const description = document.createElement("p");
+  description.textContent = game.description;
+
+  const bottom = document.createElement("div");
+  bottom.className = "card-bottom";
+
+  const tag = document.createElement("span");
+  tag.className = "tag";
+  tag.textContent = best ? "BEST " + best : game.categoryLabel;
+
+  const playButton = document.createElement("button");
+  playButton.className = "play-btn";
+  playButton.dataset.play = id;
+  playButton.textContent = "PLAY ↗";
+
+  bottom.append(tag, playButton);
+  info.append(title, description, bottom);
+  card.append(art, info);
+
+  return card;
 }
 
-function renderHUD() {
-  if (!activeGame) return;
+function renderCards(container, filter = "all", search = "") {
+  container.replaceChildren();
 
-  $("liveBest").textContent = (state.bests[activeGame.id] || 0).toLocaleString();
-  $("stageBest").textContent = (state.bests[activeGame.id] || 0).toLocaleString();
-  $("liveScore").textContent = gameSession
-    ? Math.floor(gameSession.score).toLocaleString()
-    : "0";
-  $("liveCoins").textContent = gameSession ? gameSession.coins : "0";
+  const query = search.trim().toLowerCase();
+
+  const ids = Object.keys(GAME_DATA).filter(id => {
+    const game = GAME_DATA[id];
+    const matchesFilter = filter === "all" || game.category === filter;
+    const matchesSearch = !query ||
+      game.name.toLowerCase().includes(query) ||
+      game.description.toLowerCase().includes(query) ||
+      game.categoryLabel.toLowerCase().includes(query);
+
+    return matchesFilter && matchesSearch;
+  });
+
+  ids.forEach(id => container.appendChild(renderCard(id)));
+  return ids.length;
 }
 
-function toggleSound() {
-  soundEnabled = !soundEnabled;
-
-  $("soundToggle").textContent = soundEnabled ? "♫" : "♩";
-  $("soundToggle").style.color = soundEnabled ? "var(--cyan)" : "";
-
-  if (soundEnabled) playTone(520, 0.08);
-
-  notify(soundEnabled ? "Sound effects enabled." : "Sound effects disabled.");
+function renderHome() {
+  renderTop();
+  renderCards($("homeGames"));
+  renderQuestRows($("homeQuests"));
+  renderBadges($("homeBadges"));
 }
 
-function playTone(frequency, duration) {
-  if (!soundEnabled) return;
+let activeFilter = "all";
 
-  try {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    if (!audioContext) audioContext = new AudioContextClass();
-
-    if (audioContext.state === "suspended") {
-      audioContext.resume().catch(() => {});
-    }
-
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    const now = audioContext.currentTime;
-
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(frequency, now);
-    gain.gain.setValueAtTime(0.035, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-
-    oscillator.start(now);
-    oscillator.stop(now + duration);
-  } catch (error) {
-    console.warn("Audio is unavailable.", error);
-  }
+function renderLibrary() {
+  const count = renderCards($("libraryGames"), activeFilter, $("gameSearch").value);
+  $("emptyGames").classList.toggle("hidden", count !== 0);
 }
 
-function drawPreview(id) {
-  const canvas = $("gameCanvas");
+function renderBadges(container) {
+  container.replaceChildren();
+
+  BADGES.forEach(badge => {
+    const unlocked = badge.condition(state);
+    const item = document.createElement("div");
+    item.className = "badge-item" + (unlocked ? "" : " locked");
+
+    const icon = document.createElement("span");
+    icon.className = "badge-icon";
+    icon.textContent = unlocked ? badge.emoji : "🔒";
+
+    const name = document.createElement("span");
+    name.textContent = badge.name;
+
+    item.append(icon, name);
+    container.appendChild(item);
+  });
+}
+
+function renderQuestRows(container) {
+  container.replaceChildren();
+
+  QUESTS.forEach(quest => {
+    const progress = Math.min(quest.goal, Number(state.questProgress[quest.id]) || 0);
+    const claimed = Boolean(state.claimed[quest.id]);
+
+    const row = document.createElement("div");
+    row.className = "quest";
+
+    const icon = document.createElement("div");
+    icon.className = "quest-icon";
+    icon.textContent = quest.emoji;
+
+    const copy = document.createElement("div");
+    copy.className = "quest-copy";
+
+    const title = document.createElement("strong");
+    title.textContent = quest.title;
+
+    const description = document.createElement("small");
+    description.textContent = quest.description + " · " + quest.reward + " coins";
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress";
+
+    const fill = document.createElement("div");
+    fill.style.width = (progress / quest.goal * 100) + "%";
+
+    progressBar.appendChild(fill);
+    copy.append(title, description, progressBar);
+
+    const button = document.createElement("button");
+    button.className = "claim-btn" + (progress >= quest.goal && !claimed ? " ready" : "");
+    button.dataset.claim = quest.id;
+    button.disabled = claimed || progress < quest.goal;
+    button.textContent = claimed ? "CLAIMED" : progress >= quest.goal ? "CLAIM" : progress + "/" + quest.goal;
+
+    row.append(icon, copy, button);
+    container.appendChild(row);
+  });
+}
+
+function renderQuests() {
+  renderQuestRows($("questList"));
+
+  const completed = QUESTS.filter(quest => state.claimed[quest.id]).length;
+  $("questCount").textContent = completed + " / " + QUESTS.length + " complete";
+}
+
+function renderProfile() {
+  renderTop();
+
+  $("profileAvatar").textContent = state.avatar;
+  $("profileName").textContent = state.name;
+  $("profileLevel").textContent = "LEVEL " + levelFromXP(state.xp) + " CHAOS AGENT";
+  $("nameInput").value = state.name === "Player" ? "" : state.name;
+
+  $("statCoins").textContent = state.coins;
+  $("statGames").textContent = state.gamesPlayed;
+  $("statBest").textContent = Math.max(0, ...Object.values(state.best).map(Number));
+  $("statLevel").textContent = levelFromXP(state.xp);
+
+  $("profileXPBar").style.width = levelProgress(state.xp) + "%";
+  $("profileXPText").textContent =
+    levelProgress(state.xp) + " / 100 XP until level " + (levelFromXP(state.xp) + 1);
+
+  document.querySelectorAll(".avatar-choice").forEach(button => {
+    button.classList.toggle("selected", button.dataset.avatar === state.avatar);
+  });
+
+  renderBadges($("profileBadges"));
+}
+
+function renderGameScreen() {
+  const game = GAME_DATA[currentGame];
+
+  $("playCategory").textContent = game.categoryLabel;
+  $("playingTitle").textContent = game.name;
+  $("playingSubtitle").textContent = game.description;
+  $("gameName").textContent = game.name;
+  $("controlHelp").textContent = game.controls;
+  $("howTitle").textContent = "THE RULES";
+  $("howText").textContent = game.instructions;
+  $("gameBest").textContent = state.best[currentGame] || 0;
+  $("gameScore").textContent = "0";
+  $("gameCoins").textContent = "0";
+  $("currentScore").textContent = "0";
+  $("runCoins").textContent = "0 ✦";
+  $("startButton").textContent = "LET'S GO ↗";
+
+  $("overlayKicker").textContent = "READY, TROUBLEMAKER?";
+  $("overlayTitle").innerHTML = game.overlay;
+  $("overlayDescription").textContent = game.overlayDescription;
+  $("overlayControls").textContent = game.controls.toUpperCase();
+
+  $("canvasOverlay").classList.remove("hidden");
+  $("gameMessage").textContent = "Ready? Let's cause a little trouble.";
+
+  const switcher = $("gameSwitcher");
+  switcher.replaceChildren();
+
+  Object.entries(GAME_DATA).forEach(([id, item]) => {
+    const button = document.createElement("button");
+    button.className = "switch-btn" + (id === currentGame ? " active" : "");
+    button.textContent = item.emoji + " " + item.name;
+    button.dataset.switchGame = id;
+    switcher.appendChild(button);
+  });
+
+  drawTitleScreen();
+  renderTop();
+}
+
+function drawTitleScreen() {
+  const canvas = $("stage");
   const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    notify("Your browser does not support this game canvas.");
-    return;
-  }
+  const game = GAME_DATA[currentGame];
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = game.color;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (id === "runner") {
-    drawRunnerScene(ctx, canvas.width, canvas.height, 0, null);
-  } else if (id === "jumper") {
-    drawJumperScene(ctx, canvas.width, canvas.height, null);
-  } else {
-    drawCrystalScene(ctx, canvas.width, canvas.height, null);
-  }
+  drawDots(ctx, canvas.width, canvas.height, "#ffffff55", 38);
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#252044";
+  ctx.font = "90px sans-serif";
+  ctx.fillText(game.emoji, canvas.width / 2, 190);
+
+  ctx.font = "bold 32px Fredoka, sans-serif";
+  ctx.fillText(game.name.toUpperCase(), canvas.width / 2, 275);
+
+  ctx.font = "bold 16px Nunito, sans-serif";
+  ctx.fillText("PRESS LET'S GO TO START", canvas.width / 2, 325);
 }
 
-function stopSession() {
-  if (!gameSession) return;
+function launchGame(id) {
+  if (!GAME_DATA[id]) return;
 
-  gameSession.running = false;
+  stopLoop();
+  currentGame = id;
 
-  if (gameSession.frame) {
-    cancelAnimationFrame(gameSession.frame);
+  if (!state.seenGames.includes(id)) {
+    state.seenGames.push(id);
+    state.questProgress.variety = Math.min(QUESTS[2].goal, state.seenGames.length);
   }
 
-  gameSession.keys.clear();
-  gameSession = null;
+  saveState();
+  showPage("play");
+  renderGameScreen();
 }
 
-function startGame() {
-  if (!activeGame) return;
+function leaveGame() {
+  stopLoop();
+  showPage("library");
+}
 
-  stopSession();
+function setMessage(message) {
+  $("gameMessage").textContent = message;
+}
 
-  const canvas = $("gameCanvas");
+function setHUD(score, coins) {
+  const safeScore = Math.max(0, Math.floor(score));
+  $("gameScore").textContent = safeScore;
+  $("gameCoins").textContent = coins;
+  $("currentScore").textContent = safeScore;
+  $("runCoins").textContent = coins + " ✦";
+  $("gameBest").textContent = state.best[currentGame] || 0;
+}
+
+function stopLoop() {
+  if (animationFrame) cancelAnimationFrame(animationFrame);
+  animationFrame = 0;
+  session = null;
+  keys = {};
+  pointerHeld = false;
+}
+
+function startSession() {
+  stopLoop();
+
+  const canvas = $("stage");
   const ctx = canvas.getContext("2d");
 
-  if (!ctx) {
-    notify("Your browser could not start the game.");
-    return;
-  }
-
-  gameSession = {
-    id: activeGame.id,
-    canvas,
-    ctx,
+  const s = {
+    id: currentGame,
     running: true,
-    ended: false,
-    frame: 0,
-    lastTime: 0,
-    elapsed: 0,
+    over: false,
     score: 0,
     coins: 0,
-    keys: new Set(),
-    objects: [],
-    particles: [],
-    player: null,
-    worldOffset: 0,
-    obstacleTimer: 1.1,
-    coinTimer: 0.8,
-    rewardPaid: false
+    time: 0,
+    last: performance.now(),
+    canvas,
+    ctx,
+    W: canvas.width,
+    H: canvas.height
   };
 
-  initializeGame(gameSession);
+  session = s;
 
-  $("gameOverlay").classList.add("hidden");
-  renderHUD();
+  if (s.id === "lava") setupLava(s);
+  if (s.id === "snack") setupSnack(s);
+  if (s.id === "button") setupButton(s);
+  if (s.id === "astro") setupAstro(s);
+  if (s.id === "dash") setupDash(s);
+  if (s.id === "memory") setupMemory(s);
 
-  gameSession.frame = requestAnimationFrame(gameLoop);
+  $("canvasOverlay").classList.add("hidden");
+  $("startButton").textContent = "RESTART";
+  $("gameMessage").textContent = "GO GO GO!";
+  setHUD(0, 0);
+
+  animationFrame = requestAnimationFrame(frame);
 }
 
-function initializeGame(s) {
-  if (s.id === "runner") {
-    s.player = {
-      x: 150, y: 390, w: 34, h: 44,
-      vy: 0, jumps: 0, grounded: true
-    };
-    s.obstacleTimer = 1.15;
-    s.coinTimer = 0.8;
-    return;
+function finishGame(message, won = false) {
+  if (!session || session.over) return;
+
+  const s = session;
+  s.over = true;
+  s.running = false;
+
+  const id = s.id;
+  const score = Math.max(0, Math.floor(s.score));
+  const oldLevel = levelFromXP(state.xp);
+
+  state.gamesPlayed++;
+  state.xp += Math.max(10, score);
+  state.coins += s.coins;
+
+  state.questProgress.play = Math.min(QUESTS[0].goal, state.questProgress.play + 1);
+  state.questProgress.coins = Math.min(QUESTS[1].goal, state.questProgress.coins + s.coins);
+
+  state.best[id] = Math.max(Number(state.best[id]) || 0, score);
+
+  if (won) {
+    state.wins[id] = (state.wins[id] || 0) + 1;
   }
 
-  if (s.id === "jumper") {
-    s.player = {
-      x: 450, y: 380, w: 30, h: 38,
-      vx: 0, vy: 0, grounded: false
-    };
+  updateAchievements();
+  saveState();
 
-    s.cameraY = 0;
-    s.highest = s.player.y;
-    s.platforms = [];
-    s.gems = [];
+  renderTop();
+  renderHomeQuests();
+  renderQuests();
+  renderBadges($("homeBadges"));
+  setHUD(score, s.coins);
 
-    const platformXs = [
-      390, 500, 370, 240, 350, 470,
-      340, 200, 320, 450, 330, 190,
-      310, 440, 320, 180, 300, 430
-    ];
+  $("startButton").textContent = "PLAY AGAIN";
+  $("canvasOverlay").classList.remove("hidden");
+  $("overlayKicker").textContent = won ? "ABSOLUTE LEGEND" : "WELL, THAT HAPPENED";
+  $("overlayTitle").innerHTML = won ? "YOU DID<br>THE THING." : "ONE MORE<br>GO?";
+  $("overlayDescription").textContent =
+    message + " Final score: " + score + ". You earned " + s.coins + " coins.";
+  $("overlayControls").textContent = "YOUR PROGRESS HAS BEEN SAVED ON THIS DEVICE.";
 
-    for (let i = 0; i < platformXs.length; i++) {
-      const platform = {
-        x: platformXs[i],
-        y: 425 - i * 76,
-        w: 145,
-        h: 13
-      };
+  setMessage(message + " Final score: " + score + ". Press PLAY AGAIN to retry.");
 
-      s.platforms.push(platform);
+  const newLevel = levelFromXP(state.xp);
 
-      if (i > 0 && i % 2 === 1) {
-        s.gems.push({
-          x: platform.x + platform.w / 2,
-          y: platform.y - 28,
-          taken: false
-        });
-      }
-    }
-
-    return;
-  }
-
-  s.player = { x: 1, y: 1 };
-  s.moveCooldown = 0;
-  s.mazeWon = false;
-
-  s.maze = [
-    "############",
-    "#....#.....#",
-    "#.##.#.###.#",
-    "#....#...#.#",
-    "####.##..#.#",
-    "#......#...#",
-    "#.####.#.###",
-    "#.#....#...#",
-    "#.#.######.#",
-    "#..........#",
-    "############"
-  ];
-
-  s.crystals = [
-    { x: 3, y: 1, taken: false },
-    { x: 9, y: 1, taken: false },
-    { x: 1, y: 5, taken: false },
-    { x: 5, y: 5, taken: false },
-    { x: 10, y: 7, taken: false },
-    { x: 8, y: 9, taken: false },
-    { x: 2, y: 9, taken: false }
-  ];
-
-  s.enemies = [
-    { x: 9, y: 3, timer: 0 },
-    { x: 2, y: 7, timer: 0 }
-  ];
-}
-
-function gameLoop(timestamp) {
-  const s = gameSession;
-
-  if (!s || !s.running || s.ended) return;
-
-  const dt = s.lastTime
-    ? Math.min((timestamp - s.lastTime) / 1000, 0.035)
-    : 0;
-
-  s.lastTime = timestamp;
-  s.elapsed += dt;
-
-  if (s.id === "runner") updateRunner(s, dt);
-  else if (s.id === "jumper") updateJumper(s, dt);
-  else updateCrystal(s, dt);
-
-  if (gameSession === s && s.running && !s.ended) {
-    renderHUD();
-    s.frame = requestAnimationFrame(gameLoop);
-  }
-}
-
-function addParticle(s, x, y, color) {
-  for (let i = 0; i < 7; i++) {
-    s.particles.push({
-      x, y,
-      vx: (Math.random() - 0.5) * 140,
-      vy: -Math.random() * 100,
-      life: 0.45,
-      color
-    });
-  }
-}
-
-function updateParticles(s, dt) {
-  for (const p of s.particles) {
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    p.vy += 90 * dt;
-    p.life -= dt;
-  }
-
-  s.particles = s.particles.filter(p => p.life > 0);
-}
-
-function drawParticles(ctx, s) {
-  for (const p of s.particles) {
-    ctx.globalAlpha = Math.max(0, p.life / 0.45);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x, p.y, 4, 4);
-  }
-
-  ctx.globalAlpha = 1;
-}
-
-function intersects(a, b) {
-  return a.x < b.x + b.w &&
-    a.x + a.w > b.x &&
-    a.y < b.y + b.h &&
-    a.y + a.h > b.y;
-}
-
-/* NEON ODYSSEY */
-
-function updateRunner(s, dt) {
-  const w = s.canvas.width;
-  const h = s.canvas.height;
-  const p = s.player;
-
-  s.score += dt * 10;
-  s.worldOffset += dt * (260 + Math.min(s.score * 1.2, 260));
-  s.obstacleTimer -= dt;
-  s.coinTimer -= dt;
-
-  if (s.obstacleTimer <= 0) {
-    const last = s.objects[s.objects.length - 1];
-
-    if (!last || last.x < w - 270) {
-      const tall = Math.random() < 0.35;
-
-      s.objects.push({
-        type: "obstacle",
-        x: w + 20,
-        y: tall ? 385 : 407,
-        w: tall ? 33 : 27,
-        h: tall ? 49 : 27
-      });
-
-      s.obstacleTimer = Math.max(
-        0.65,
-        1.25 + Math.random() * 0.6 - s.score / 800
-      );
-    }
-  }
-
-  if (s.coinTimer <= 0) {
-    s.objects.push({
-      type: "coin",
-      x: w + 20,
-      y: 300 + Math.random() * 65,
-      w: 16,
-      h: 16
-    });
-
-    s.coinTimer = 0.8 + Math.random() * 0.7;
-  }
-
-  const speed = 260 + Math.min(s.score * 1.3, 300);
-
-  for (const object of s.objects) {
-    object.x -= speed * dt;
-  }
-
-  s.objects = s.objects.filter(o => o.x + o.w > -20);
-
-  p.vy += 1550 * dt;
-  p.y += p.vy * dt;
-
-  const floor = 434;
-
-  if (p.y + p.h >= floor) {
-    p.y = floor - p.h;
-    p.vy = 0;
-    p.grounded = true;
-    p.jumps = 0;
+  if (newLevel > oldLevel) {
+    notify("LEVEL UP! You're now level " + newLevel + "!");
   } else {
-    p.grounded = false;
+    notify(won ? "YOU DID IT! +" + s.coins + " coins" : "Run finished. +" + s.coins + " coins");
   }
+}
 
-  for (const object of s.objects) {
-    if (object.type === "coin" && intersects(p, object)) {
-      object.type = "taken";
-      s.coins++;
-      s.score += 5;
-
-      addParticle(s, object.x, object.y, "#ffcf70");
-      playTone(740, 0.05);
-    } else if (object.type === "obstacle" && intersects(p, object)) {
-      drawRunnerScene(s.ctx, w, h, s.worldOffset, s);
-      endGame(false, "You scored " + Math.floor(s.score) + ".");
-      return;
+function updateAchievements() {
+  BADGES.forEach(badge => {
+    if (badge.condition(state) && !state.achievements.includes(badge.id)) {
+      state.achievements.push(badge.id);
     }
-  }
-
-  updateParticles(s, dt);
-  drawRunnerScene(s.ctx, w, h, s.worldOffset, s);
+  });
 }
 
-function jumpRunner() {
-  const s = gameSession;
-
-  if (!s || !s.running || s.id !== "runner") return;
-
-  const p = s.player;
-
-  if (p.jumps >= 2) return;
-
-  p.vy = p.jumps === 0 ? -590 : -480;
-  p.jumps++;
-  p.grounded = false;
-
-  playTone(400, 0.07);
+function addCoin(s, amount = 1) {
+  s.coins += amount;
+  s.score += amount * 5;
 }
 
-function drawRunnerScene(ctx, w, h, offset, s) {
-  ctx.fillStyle = "#0b1022";
-  ctx.fillRect(0, 0, w, h);
+/* FLOOR IS LAVA */
 
-  const sky = ctx.createLinearGradient(0, 0, 0, h);
-  sky.addColorStop(0, "#10152e");
-  sky.addColorStop(1, "#211336");
-
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, w, h);
-
-  ctx.fillStyle = "#b29bff";
-  ctx.beginPath();
-  ctx.arc(740, 100, 40, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.globalAlpha = 0.35;
-  ctx.fillStyle = "#0a0e1d";
-
-  for (let i = 0; i < 16; i++) {
-    const x = ((i * 95 - offset * 0.15) % (w + 100) + w + 100) % (w + 100) - 50;
-    const bh = 80 + (i * 47 % 130);
-    ctx.fillRect(x, 360 - bh, 65, bh);
-  }
-
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = "#14152d";
-  ctx.fillRect(0, 434, w, 106);
-
-  ctx.strokeStyle = "#5ee7ff";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(0, 434);
-  ctx.lineTo(w, 434);
-  ctx.stroke();
-
-  ctx.strokeStyle = "#41436c";
-  ctx.lineWidth = 1;
-
-  for (let x = -60; x < w + 60; x += 60) {
-    const xx = x - (offset % 60);
-    ctx.beginPath();
-    ctx.moveTo(xx, 435);
-    ctx.lineTo(xx - 35, 540);
-    ctx.stroke();
-  }
-
-  if (!s) {
-    ctx.fillStyle = "#a68bff";
-    ctx.fillRect(150, 390, 34, 44);
-    return;
-  }
-
-  for (const object of s.objects) {
-    if (object.type === "obstacle") {
-      ctx.fillStyle = "#ff579c";
-      ctx.shadowColor = "#ff579c";
-      ctx.shadowBlur = 16;
-      ctx.fillRect(object.x, object.y, object.w, object.h);
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = "#ffb0d2";
-      ctx.fillRect(object.x + 5, object.y + 5, Math.max(3, object.w - 10), 4);
-    } else if (object.type === "coin") {
-      ctx.fillStyle = "#ffcf70";
-      ctx.shadowColor = "#ffcf70";
-      ctx.shadowBlur = 15;
-      ctx.beginPath();
-      ctx.arc(object.x + 8, object.y + 8, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-  }
-
-  const p = s.player;
-
-  ctx.fillStyle = "#a68bff";
-  ctx.shadowColor = "#a68bff";
-  ctx.shadowBlur = 20;
-  ctx.fillRect(p.x, p.y, p.w, p.h);
-  ctx.shadowBlur = 0;
-
-  ctx.fillStyle = "#f3f4ff";
-  ctx.fillRect(p.x + 20, p.y + 10, 7, 7);
-
-  drawParticles(ctx, s);
+function setupLava(s) {
+  s.player = { x: 100, y: 350, w: 35, h: 42, vx: 0, vy: 0, grounded: false, jumpCount: 0 };
+  s.platforms = [
+    { x: 0, y: 430, w: 200, h: 70 },
+    { x: 245, y: 370, w: 125, h: 18 },
+    { x: 425, y: 315, w: 120, h: 18 },
+    { x: 590, y: 360, w: 130, h: 18 },
+    { x: 770, y: 290, w: 130, h: 18 }
+  ];
+  s.obstacles = [];
+  s.spawnTimer = 1.3;
+  s.lava = 480;
+  s.worldSpeed = 115;
+  s.invulnerable = 0;
 }
 
-/* SKYBOUND */
-
-function updateJumper(s, dt) {
+function updateLava(s, dt) {
+  const { ctx, W, H } = s;
   const p = s.player;
-  const w = s.canvas.width;
-  const h = s.canvas.height;
 
-  const left = s.keys.has("ArrowLeft") || s.keys.has("a");
-  const right = s.keys.has("ArrowRight") || s.keys.has("d");
+  s.score += dt * 2;
+  s.lava -= dt * 4.2;
+  s.invulnerable = Math.max(0, s.invulnerable - dt);
 
-  p.vx = ((right ? 1 : 0) - (left ? 1 : 0)) * 260;
+  const move = (keys.ArrowRight || keys.d || keys.D ? 1 : 0) -
+    (keys.ArrowLeft || keys.a || keys.A ? 1 : 0);
 
-  const oldY = p.y;
+  p.vx = move * 275;
   p.x += p.vx * dt;
-  p.x = Math.max(0, Math.min(w - p.w, p.x));
+  p.x = Math.max(0, Math.min(W - p.w, p.x));
 
-  p.grounded = false;
-  p.vy += 1100 * dt;
+  const oldBottom = p.y + p.h;
+  p.vy += 1050 * dt;
   p.y += p.vy * dt;
-
-  if (p.vy > 0) {
-    for (const platform of s.platforms) {
-      const crossedPlatform =
-        oldY + p.h <= platform.y &&
-        p.y + p.h >= platform.y;
-
-      const overlapsPlatform =
-        p.x + p.w > platform.x &&
-        p.x < platform.x + platform.w;
-
-      if (crossedPlatform && overlapsPlatform) {
-        p.y = platform.y - p.h;
-        p.vy = 0;
-        p.grounded = true;
-        break;
-      }
-    }
-  }
-
-  for (const gem of s.gems) {
-    if (
-      !gem.taken &&
-      Math.abs((p.x + p.w / 2) - gem.x) < 22 &&
-      Math.abs((p.y + p.h / 2) - gem.y) < 25
-    ) {
-      gem.taken = true;
-      s.coins += 3;
-      s.score += 20;
-
-      addParticle(s, gem.x, gem.y, "#5ee7ff");
-      playTone(800, 0.06);
-    }
-  }
-
-  s.highest = Math.min(s.highest, p.y);
-  s.score = Math.max(
-    s.score,
-    Math.floor(Math.max(0, 425 - s.highest) / 2)
-  );
-
-  if (p.y < s.cameraY + 180) {
-    s.cameraY = p.y - 180;
-  }
-
-  updateParticles(s, dt);
-  drawJumperScene(s.ctx, w, h, s);
-
-  if (p.y - s.cameraY > h + 20) {
-    endGame(false, "You reached a height score of " + Math.floor(s.score) + ".");
-  }
-}
-
-function jumpJumper() {
-  const s = gameSession;
-
-  if (!s || !s.running || s.id !== "jumper") return;
-
-  if (s.player.grounded) {
-    s.player.vy = -590;
-    s.player.grounded = false;
-    playTone(420, 0.06);
-  }
-}
-
-function drawJumperScene(ctx, w, h, s) {
-  ctx.fillStyle = "#091629";
-  ctx.fillRect(0, 0, w, h);
-
-  const gradient = ctx.createLinearGradient(0, 0, w, h);
-  gradient.addColorStop(0, "#102c45");
-  gradient.addColorStop(1, "#1d1640");
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, w, h);
-
-  ctx.globalAlpha = 0.6;
-
-  for (let i = 0; i < 70; i++) {
-    ctx.fillStyle = i % 3 === 0 ? "#5ee7ff" : "#ffffff";
-    ctx.fillRect((i * 137) % w, (i * 83) % h, 2, 2);
-  }
-
-  ctx.globalAlpha = 1;
-
-  if (!s) {
-    for (let i = 0; i < 5; i++) {
-      const x = 110 + (i * 157) % (w - 180);
-      const y = 420 - i * 76;
-
-      ctx.fillStyle = "#23647a";
-      ctx.fillRect(x, y, 130, 12);
-    }
-
-    ctx.fillStyle = "#5ee7ff";
-    ctx.fillRect(450, 380, 30, 38);
-    return;
-  }
+  p.grounded = false;
 
   for (const platform of s.platforms) {
-    const y = platform.y - s.cameraY;
+    const newBottom = p.y + p.h;
 
-    if (y < -30 || y > h + 30) continue;
-
-    ctx.fillStyle = "#16465d";
-    ctx.fillRect(platform.x, y, platform.w, platform.h);
-
-    ctx.fillStyle = "#5ee7ff";
-    ctx.fillRect(platform.x, y, platform.w, 3);
+    if (
+      p.vy >= 0 &&
+      p.x + p.w > platform.x &&
+      p.x < platform.x + platform.w &&
+      oldBottom <= platform.y &&
+      newBottom >= platform.y
+    ) {
+      p.y = platform.y - p.h;
+      p.vy = 0;
+      p.grounded = true;
+      p.jumpCount = 0;
+    }
   }
 
-  for (const gem of s.gems) {
-    if (gem.taken) continue;
+  s.platforms.forEach(platform => {
+    platform.x -= s.worldSpeed * dt;
+  });
 
-    const y = gem.y - s.cameraY;
+  s.platforms = s.platforms.filter(platform => platform.x + platform.w > -10);
 
-    if (y < -20 || y > h + 20) continue;
+  s.spawnTimer -= dt;
 
-    ctx.fillStyle = "#7df5b4";
-    ctx.shadowColor = "#7df5b4";
-    ctx.shadowBlur = 15;
+  if (s.spawnTimer <= 0) {
+    s.spawnTimer = .9 + Math.random() * .55;
+    const y = 270 + Math.random() * 115;
+    const x = W + 15;
+    s.platforms.push({ x, y, w: 110 + Math.random() * 55, h: 18 });
+
+    if (Math.random() < .3) {
+      s.obstacles.push({ x: x + 40, y: y - 27, w: 24, h: 27 });
+    }
+  }
+
+  s.obstacles.forEach(obstacle => {
+    obstacle.x -= s.worldSpeed * dt;
+  });
+
+  s.obstacles = s.obstacles.filter(obstacle => obstacle.x + obstacle.w > 0);
+
+  for (const obstacle of s.obstacles) {
+    const colliding =
+      p.x < obstacle.x + obstacle.w &&
+      p.x + p.w > obstacle.x &&
+      p.y < obstacle.y + obstacle.h &&
+      p.y + p.h > obstacle.y;
+
+    if (colliding && s.invulnerable <= 0) {
+      s.invulnerable = 1;
+      p.vy = -300;
+      s.score = Math.max(0, s.score - 10);
+    }
+  }
+
+  if (p.y + p.h >= s.lava || p.y > H + 80) {
+    finishGame("The lava won this round.", false);
+  }
+
+  drawLava(s);
+}
+
+function drawLava(s) {
+  const { ctx, W, H } = s;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#ffd5a0";
+  ctx.fillRect(0, 0, W, H);
+  drawDots(ctx, W, H, "#ffffff55", 40);
+
+  ctx.fillStyle = "#ff704d";
+  ctx.fillRect(0, s.lava, W, H - s.lava);
+
+  ctx.fillStyle = "#ffb84e";
+
+  for (let x = -20; x < W + 20; x += 55) {
+    const wave = Math.sin(s.time * 4 + x) * 8;
     ctx.beginPath();
-    ctx.moveTo(gem.x, y - 10);
-    ctx.lineTo(gem.x + 8, y);
-    ctx.lineTo(gem.x, y + 10);
-    ctx.lineTo(gem.x - 8, y);
+    ctx.ellipse(x, s.lava + wave, 32, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  s.platforms.forEach(platform => {
+    ctx.fillStyle = "#8151a8";
+    roundRect(ctx, platform.x, platform.y, platform.w, platform.h, 7);
+    ctx.fill();
+
+    ctx.fillStyle = "#d9a2ff";
+    roundRect(ctx, platform.x, platform.y, platform.w, 6, 4);
+    ctx.fill();
+  });
+
+  s.obstacles.forEach(obstacle => {
+    ctx.fillStyle = "#ff3d77";
+    ctx.beginPath();
+    ctx.moveTo(obstacle.x, obstacle.y + obstacle.h);
+    ctx.lineTo(obstacle.x + obstacle.w / 2, obstacle.y);
+    ctx.lineTo(obstacle.x + obstacle.w, obstacle.y + obstacle.h);
     ctx.closePath();
     ctx.fill();
-    ctx.shadowBlur = 0;
+  });
+
+  drawCharacter(ctx, s.player.x, s.player.y, s.player.w, s.player.h, "#6e51c8", "👾");
+
+  ctx.fillStyle = "#252044";
+  ctx.font = "bold 17px Nunito";
+  ctx.textAlign = "left";
+  ctx.fillText("SURVIVE THE MELTDOWN", 18, 27);
+}
+
+function jumpLava() {
+  if (!session || session.id !== "lava" || session.over) return;
+
+  const player = session.player;
+
+  if (player.jumpCount < 2) {
+    player.vy = -445;
+    player.jumpCount++;
+    player.grounded = false;
+  }
+}
+
+/* SNACK SNATCHER */
+
+function setupSnack(s) {
+  s.gridW = 18;
+  s.gridH = 10;
+  s.player = { x: 1, y: 1 };
+  s.snacks = [];
+  s.walls = new Set();
+  s.enemies = [
+    { x: 16, y: 8, cooldown: .7 },
+    { x: 15, y: 1, cooldown: 1.1 }
+  ];
+  s.lives = 3;
+  s.moveTimer = 0;
+  s.snackEmoji = ["🍟", "🍕", "🍩", "🍪", "🍔", "🧁"];
+
+  for (let y = 0; y < s.gridH; y++) {
+    for (let x = 0; x < s.gridW; x++) {
+      if (x === 0 || y === 0 || x === s.gridW - 1 || y === s.gridH - 1) {
+        s.walls.add(x + "," + y);
+      }
+    }
   }
 
-  const p = s.player;
+  /* Place a small number of interior walls without blocking the corridors. */
+  for (let y = 2; y < s.gridH - 1; y += 2) {
+    for (let x = 3; x < s.gridW - 2; x += 4) {
+      if ((x === 3 && y === 2) || (x === 15 && y === 8)) continue;
+      s.walls.add(x + "," + y);
+    }
+  }
 
-  ctx.fillStyle = "#a68bff";
-  ctx.shadowColor = "#a68bff";
-  ctx.shadowBlur = 15;
-  ctx.fillRect(p.x, p.y - s.cameraY, p.w, p.h);
-  ctx.shadowBlur = 0;
+  for (let i = 0; i < 24; i++) {
+    let x, y, attempts = 0;
 
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(p.x + 19, p.y - s.cameraY + 8, 5, 5);
+    do {
+      x = 1 + Math.floor(Math.random() * (s.gridW - 2));
+      y = 1 + Math.floor(Math.random() * (s.gridH - 2));
+      attempts++;
+    } while (
+      (
+        s.walls.has(x + "," + y) ||
+        (x === 1 && y === 1) ||
+        s.enemies.some(enemy => enemy.x === x && enemy.y === y) ||
+        s.snacks.some(snack => snack.x === x && snack.y === y)
+      ) &&
+      attempts < 500
+    );
 
-  drawParticles(ctx, s);
+    if (attempts < 500) {
+      s.snacks.push({
+        x, y,
+        emoji: s.snackEmoji[Math.floor(Math.random() * s.snackEmoji.length)]
+      });
+    }
+  }
 }
 
-/* CRYSTAL QUEST */
+function updateSnack(s, dt) {
+  s.moveTimer -= dt;
 
-function isWall(s, x, y) {
-  return y < 0 ||
-    y >= s.maze.length ||
-    x < 0 ||
-    x >= s.maze[0].length ||
-    s.maze[y][x] === "#";
-}
+  const player = s.player;
 
-function updateCrystal(s, dt) {
-  const p = s.player;
-  const w = s.canvas.width;
-  const h = s.canvas.height;
-
-  s.moveCooldown -= dt;
-
-  if (s.moveCooldown <= 0) {
+  if (s.moveTimer <= 0) {
     let dx = 0;
     let dy = 0;
 
-    if (s.keys.has("ArrowLeft") || s.keys.has("a")) dx = -1;
-    else if (s.keys.has("ArrowRight") || s.keys.has("d")) dx = 1;
-    else if (s.keys.has("ArrowUp") || s.keys.has("w")) dy = -1;
-    else if (s.keys.has("ArrowDown") || s.keys.has("s")) dy = 1;
+    if (keys.ArrowLeft || keys.a || keys.A) dx = -1;
+    else if (keys.ArrowRight || keys.d || keys.D) dx = 1;
+    else if (keys.ArrowUp || keys.w || keys.W) dy = -1;
+    else if (keys.ArrowDown || keys.s || keys.S) dy = 1;
 
     if (dx || dy) {
-      const nx = p.x + dx;
-      const ny = p.y + dy;
+      s.moveTimer = .13;
 
-      if (!isWall(s, nx, ny)) {
-        p.x = nx;
-        p.y = ny;
-        s.score += 1;
-        s.moveCooldown = 0.12;
+      const nx = player.x + dx;
+      const ny = player.y + dy;
+
+      if (!s.walls.has(nx + "," + ny)) {
+        player.x = nx;
+        player.y = ny;
       }
-    }
-  }
 
-  for (const crystal of s.crystals) {
-    if (!crystal.taken && p.x === crystal.x && p.y === crystal.y) {
-      crystal.taken = true;
-      s.coins += 5;
-      s.score += 20;
+      const index = s.snacks.findIndex(snack => snack.x === player.x && snack.y === player.y);
 
-      addParticle(
-        s,
-        (s.canvas.width - 90) / 2 + p.x * 54,
-        (s.canvas.height - 50) / 2 + p.y * 43,
-        "#7df5b4"
-      );
+      if (index !== -1) {
+        s.snacks.splice(index, 1);
+        addCoin(s, 1);
 
-      playTone(720, 0.06);
+        if (s.snacks.length === 0) {
+          s.score += 100;
+          finishGame("You cleaned out the kitchen!", true);
+          return;
+        }
+      }
     }
   }
 
   for (const enemy of s.enemies) {
-    enemy.timer += dt;
+    enemy.cooldown -= dt;
 
-    if (enemy.timer >= 1) {
-      enemy.timer = 0;
+    if (enemy.cooldown <= 0) {
+      enemy.cooldown = .42 + Math.random() * .18;
 
-      const dx = p.x - enemy.x;
-      const dy = p.y - enemy.y;
+      const dx = Math.sign(player.x - enemy.x);
+      const dy = Math.sign(player.y - enemy.y);
+      const choices = Math.random() < .5 ? [[dx, 0], [0, dy]] : [[0, dy], [dx, 0]];
 
-      const options = Math.abs(dx) > Math.abs(dy)
-        ? [[Math.sign(dx), 0], [0, Math.sign(dy)]]
-        : [[0, Math.sign(dy)], [Math.sign(dx), 0]];
+      for (const [mx, my] of choices) {
+        if (!mx && !my) continue;
 
-      for (const [ex, ey] of options) {
-        if ((ex || ey) && !isWall(s, enemy.x + ex, enemy.y + ey)) {
-          enemy.x += ex;
-          enemy.y += ey;
+        const nx = enemy.x + mx;
+        const ny = enemy.y + my;
+
+        if (!s.walls.has(nx + "," + ny)) {
+          enemy.x = nx;
+          enemy.y = ny;
           break;
         }
       }
     }
 
-    if (enemy.x === p.x && enemy.y === p.y) {
-      drawCrystalScene(s.ctx, w, h, s);
+    if (enemy.x === player.x && enemy.y === player.y) {
+      s.lives--;
+      enemy.x = enemy.x < 9 ? 16 : 1;
+      enemy.y = enemy.y < 5 ? 8 : 1;
+      player.x = 1;
+      player.y = 1;
 
-      endGame(
-        false,
-        "The guardians caught you. You collected " +
-        s.crystals.filter(c => c.taken).length + " crystals."
-      );
+      setMessage("BONK! Lives left: " + s.lives + ". Keep grabbing snacks!");
 
+      if (s.lives <= 0) {
+        finishGame("The snack monsters got you.", false);
+        return;
+      }
+    }
+  }
+
+  s.score += dt * .5;
+  drawSnack(s);
+}
+
+function drawSnack(s) {
+  const { ctx, W, H } = s;
+  const cw = W / s.gridW;
+  const ch = H / s.gridH;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#d5ffd9";
+  ctx.fillRect(0, 0, W, H);
+
+  s.walls.forEach(wall => {
+    const [x, y] = wall.split(",").map(Number);
+
+    ctx.fillStyle = "#5acb82";
+    roundRect(ctx, x * cw + 2, y * ch + 2, cw - 4, ch - 4, 6);
+    ctx.fill();
+
+    ctx.fillStyle = "#a2f0ae";
+    roundRect(ctx, x * cw + 5, y * ch + 4, cw - 10, 5, 3);
+    ctx.fill();
+  });
+
+  s.snacks.forEach(snack => {
+    ctx.font = "24px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(snack.emoji, (snack.x + .5) * cw, (snack.y + .5) * ch);
+  });
+
+  s.enemies.forEach(enemy => {
+    drawCharacter(ctx, enemy.x * cw + 4, enemy.y * ch + 3, cw - 8, ch - 6, "#ff5b91", "👹");
+  });
+
+  drawCharacter(ctx, s.player.x * cw + 4, s.player.y * ch + 3, cw - 8, ch - 6, "#6550c8", "😎");
+
+  ctx.fillStyle = "#252044";
+  ctx.font = "bold 15px Nunito";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText("SNACKS LEFT: " + s.snacks.length + "     LIVES: " + "♥".repeat(s.lives), 12, 23);
+}
+
+/* DON'T PRESS THAT */
+
+function setupButton(s) {
+  s.round = 0;
+  s.maxRounds = 8;
+  s.timer = 0;
+  s.phase = "ready";
+  s.rule = "";
+  s.roundScore = 0;
+  s.streak = 0;
+  s.buttons = [];
+  s.options = [];
+  beginButtonRound(s);
+}
+
+function beginButtonRound(s) {
+  s.round++;
+
+  if (s.round > s.maxRounds) {
+    s.score += s.roundScore;
+    finishGame("You survived all eight suspicious decisions!", true);
+    return;
+  }
+
+  const rules = [
+    { text: "PRESS THE RED BUTTON", good: "🔴", options: ["🔴", "🔵", "🟡"] },
+    { text: "AVOID THE GREEN BUTTON", good: "🟣", options: ["🟢", "🟣", "🟠"] },
+    { text: "PICK THE BIGGEST NUMBER", good: "12", options: ["4", "9", "12"] },
+    { text: "PICK THE ODD ONE OUT", good: "🍕", options: ["🐸", "🍕", "🐸"] },
+    { text: "PICK THE ONLY FRUIT", good: "🍉", options: ["🥨", "🧀", "🍉"] },
+    { text: "PRESS THE BLUE BUTTON", good: "🔵", options: ["🟡", "🔴", "🔵"] },
+    { text: "PICK THE ANGRY FACE", good: "😡", options: ["😡", "😴", "🥳"] },
+    { text: "PICK THE THING THAT FLOATS", good: "🪶", options: ["🪨", "🪶", "🧱"] }
+  ];
+
+  const item = rules[Math.floor(Math.random() * rules.length)];
+
+  s.rule = item.text;
+  s.options = item.options.map(label => ({ label, good: label === item.good }));
+
+  for (let i = s.options.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [s.options[i], s.options[j]] = [s.options[j], s.options[i]];
+  }
+
+  s.phase = "playing";
+  s.timer = Math.max(1.7, 4.2 - s.round * .25);
+  s.buttons = [];
+
+  drawButton(s);
+  setMessage("ROUND " + s.round + " OF " + s.maxRounds + " · Follow the rule. Don't overthink it.");
+}
+
+function updateButton(s, dt) {
+  if (s.phase === "playing") {
+    s.timer -= dt;
+
+    if (s.timer <= 0) {
+      s.streak = 0;
+      s.phase = "result";
+      s.resultGood = false;
+      s.resultText = "TOO SLOW!";
+      setMessage("TOO SLOW! The button has won this round.");
+      s.timer = 1;
+    }
+  } else if (s.phase === "result") {
+    s.timer -= dt;
+
+    if (s.timer <= 0) {
+      beginButtonRound(s);
+      if (!s.over) return;
+    }
+  }
+
+  drawButton(s);
+}
+
+function drawButton(s) {
+  const { ctx, W, H } = s;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#ffc0d9";
+  ctx.fillRect(0, 0, W, H);
+  drawDots(ctx, W, H, "#ffffff66", 40);
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#252044";
+  ctx.font = "bold 16px Nunito";
+  ctx.fillText("ROUND " + Math.min(s.round, s.maxRounds) + " / " + s.maxRounds, W / 2, 45);
+
+  ctx.font = "bold 25px Fredoka";
+  ctx.fillText(s.rule, W / 2, 100);
+
+  const width = 165;
+  const height = 145;
+  const gap = 22;
+  const startX = (W - (width * 3 + gap * 2)) / 2;
+
+  s.buttons = [];
+
+  s.options.forEach((option, index) => {
+    const x = startX + index * (width + gap);
+    const y = 160;
+
+    s.buttons.push({ x, y, w: width, h: height, good: option.good });
+
+    ctx.fillStyle = ["#ffdc56", "#8be8a1", "#64d9ff"][index];
+    roundRect(ctx, x, y, width, height, 20);
+    ctx.fill();
+
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#252044";
+    roundRect(ctx, x, y, width, height, 20);
+    ctx.stroke();
+
+    ctx.fillStyle = "#252044";
+    ctx.font = "bold 46px Fredoka";
+    ctx.fillText(option.label, x + width / 2, y + height / 2);
+  });
+
+  if (s.phase === "playing") {
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, W / 2 - 160, 345, 320, 18, 9);
+    ctx.fill();
+
+    ctx.fillStyle = "#ff5b91";
+    roundRect(ctx, W / 2 - 160, 345, 320 * Math.max(0, s.timer / 4.2), 18, 9);
+    ctx.fill();
+
+    ctx.fillStyle = "#252044";
+    ctx.font = "bold 15px Nunito";
+    ctx.fillText("STREAK: " + s.streak + "     POINTS: " + s.roundScore, W / 2, 410);
+  } else if (s.phase === "result") {
+    ctx.fillStyle = "#252044";
+    ctx.font = "bold 28px Fredoka";
+    ctx.fillText(s.resultText || "OOPS!", W / 2, 410);
+  }
+}
+
+function buttonChoice(s, x, y) {
+  if (!s || s.id !== "button" || s.over || s.phase !== "playing") return;
+
+  const button = s.buttons.find(item =>
+    x >= item.x && x <= item.x + item.w &&
+    y >= item.y && y <= item.y + item.h
+  );
+
+  if (!button) return;
+
+  s.phase = "result";
+  s.timer = .8;
+
+  if (button.good) {
+    s.streak++;
+    s.roundScore += 15 + s.streak * 2;
+    addCoin(s, 1);
+    s.resultGood = true;
+    s.resultText = "NICE ONE!";
+    setMessage("CORRECT! Your brain is functioning. Barely.");
+  } else {
+    s.streak = 0;
+    s.roundScore = Math.max(0, s.roundScore - 5);
+    s.resultGood = false;
+    s.resultText = "WRONG BUTTON!";
+    setMessage("Wrong button. That was impressively incorrect.");
+  }
+}
+
+/* ALIEN DELIVERY */
+
+function setupAstro(s) {
+  s.target = { x: 720, y: 190, r: 34 };
+  s.parcels = [];
+  s.deliveries = 0;
+  s.deliveryLimit = 6;
+  s.targetMove = 0;
+  s.stars = Array.from({ length: 50 }, () => ({
+    x: Math.random() * s.W,
+    y: Math.random() * s.H,
+    r: Math.random() * 2 + 1
+  }));
+}
+
+function updateAstro(s, dt) {
+  s.targetMove += dt;
+  s.target.y = 190 + Math.sin(s.targetMove * 1.5) * 90;
+
+  s.parcels.forEach(parcel => {
+    parcel.vy += 440 * dt;
+    parcel.x += parcel.vx * dt;
+    parcel.y += parcel.vy * dt;
+
+    if (parcel.x > s.W + 30 || parcel.y > s.H + 30 || parcel.y < -30) {
+      parcel.dead = true;
+    }
+
+    const dx = parcel.x - s.target.x;
+    const dy = parcel.y - s.target.y;
+
+    if (!parcel.dead && Math.hypot(dx, dy) < s.target.r + 10) {
+      parcel.dead = true;
+      s.deliveries++;
+      addCoin(s, 2);
+      s.score += 25;
+
+      if (s.deliveries >= s.deliveryLimit) {
+        finishGame("All parcels delivered. Intergalactic employee of the month!", true);
+        return;
+      }
+
+      setMessage("DELIVERY COMPLETE! " + (s.deliveryLimit - s.deliveries) + " parcels left.");
+    }
+  });
+
+  s.parcels = s.parcels.filter(parcel => !parcel.dead);
+  drawAstro(s);
+}
+
+function drawAstro(s) {
+  const { ctx, W, H } = s;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#29234f";
+  ctx.fillRect(0, 0, W, H);
+
+  s.stars.forEach(star => {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.fillStyle = "#9c7bff";
+  ctx.beginPath();
+  ctx.arc(s.target.x, s.target.y, s.target.r + 12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#ffdc56";
+  ctx.beginPath();
+  ctx.arc(s.target.x, s.target.y, s.target.r, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.font = "39px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🪐", s.target.x, s.target.y);
+
+  ctx.fillStyle = "#ff5b91";
+  roundRect(ctx, 43, 325, 105, 105, 24);
+  ctx.fill();
+
+  ctx.font = "51px sans-serif";
+  ctx.fillText("👽", 95, 377);
+
+  ctx.strokeStyle = "#ffffff66";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(95, 377);
+  ctx.lineTo(s.target.x, s.target.y);
+  ctx.stroke();
+
+  s.parcels.forEach(parcel => {
+    ctx.fillStyle = "#ff985a";
+    roundRect(ctx, parcel.x - 12, parcel.y - 12, 24, 24, 5);
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(parcel.x - 12, parcel.y - 12, 24, 24);
+  });
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 16px Nunito";
+  ctx.textAlign = "left";
+  ctx.fillText("DELIVERIES: " + s.deliveries + " / " + s.deliveryLimit, 18, 28);
+}
+
+function astroLaunch(s, x, y) {
+  if (!s || s.id !== "astro" || s.over) return;
+
+  const dx = x - 95;
+  const dy = y - 377;
+  const length = Math.max(1, Math.hypot(dx, dy));
+  const speed = Math.min(620, Math.max(250, length * 1.1));
+
+  s.parcels.push({
+    x: 105,
+    y: 375,
+    vx: dx / length * speed,
+    vy: dy / length * speed,
+    dead: false
+  });
+}
+
+/* COLOR DASH */
+
+function setupDash(s) {
+  s.lane = 1;
+  s.speed = 290;
+  s.gates = [];
+  s.colors = ["#ff5b91", "#6550c8", "#ffdc56"];
+  s.colorNames = ["PINK", "PURPLE", "YELLOW"];
+  s.gatesPassed = 0;
+
+  for (let i = 0; i < 4; i++) {
+    s.gates.push({
+      x: s.W + 80 + i * 240,
+      lane: Math.floor(Math.random() * 3),
+      passed: false
+    });
+  }
+}
+
+function updateDash(s, dt) {
+  s.score += dt * 3;
+  s.speed = Math.min(550, 290 + s.score * 2);
+
+  s.gates.forEach(gate => {
+    gate.x -= s.speed * dt;
+
+    if (!gate.passed && gate.x < 130) {
+      gate.passed = true;
+
+      if (gate.lane === s.lane) {
+        s.gatesPassed++;
+        addCoin(s, 1);
+        s.score += 10;
+      } else {
+        finishGame("Wrong color! Your color-matching career is over.", false);
+      }
+    }
+  });
+
+  if (s.over) return;
+
+  s.gates = s.gates.filter(gate => gate.x > -60);
+
+  while (s.gates.length < 4) {
+    const lastX = Math.max(s.W, ...s.gates.map(gate => gate.x));
+    s.gates.push({
+      x: lastX + 210 + Math.random() * 80,
+      lane: Math.floor(Math.random() * 3),
+      passed: false
+    });
+  }
+
+  drawDash(s);
+}
+
+function drawDash(s) {
+  const { ctx, W, H } = s;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#b5f0ff";
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 9; i++) {
+    ctx.fillStyle = i % 2 ? "#ffffff77" : "#64d9ff55";
+    ctx.beginPath();
+    ctx.arc((i * 127 - s.time * 45 % W + W) % W, 70 + (i * 53) % 340, 18, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  for (let i = 0; i < 3; i++) {
+    const y = 130 + i * 105;
+
+    ctx.fillStyle = "#ffffff99";
+    roundRect(ctx, 35, y, W - 70, 72, 18);
+    ctx.fill();
+
+    ctx.fillStyle = s.colors[i];
+    roundRect(ctx, 45, y + 8, W - 90, 56, 13);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff33";
+    ctx.fillRect(50, y + 12, W - 100, 8);
+  }
+
+  s.gates.forEach(gate => {
+    const y = 130 + gate.lane * 105;
+
+    ctx.fillStyle = "#252044";
+    roundRect(ctx, gate.x, y, 42, 72, 12);
+    ctx.fill();
+
+    ctx.fillStyle = s.colors[gate.lane];
+    roundRect(ctx, gate.x + 7, y + 7, 28, 58, 7);
+    ctx.fill();
+  });
+
+  const playerY = 130 + s.lane * 105 + 36;
+
+  ctx.fillStyle = "#252044";
+  roundRect(ctx, 100, playerY - 25, 55, 50, 14);
+  ctx.fill();
+
+  ctx.fillStyle = s.colors[s.lane];
+  roundRect(ctx, 106, playerY - 19, 43, 38, 10);
+  ctx.fill();
+
+  ctx.fillStyle = "#252044";
+  ctx.textAlign = "left";
+  ctx.font = "bold 16px Nunito";
+  ctx.fillText("MATCH THE COLOR BEFORE THE GATE!", 22, 29);
+
+  ctx.textAlign = "center";
+  ctx.font = "bold 13px Nunito";
+
+  s.colors.forEach((color, i) => {
+    ctx.fillStyle = color;
+    roundRect(ctx, 250 + i * 145, 465, 120, 25, 8);
+    ctx.fill();
+
+    ctx.fillStyle = "#252044";
+    ctx.fillText((i + 1) + " · " + s.colorNames[i], 310 + i * 145, 482);
+  });
+}
+
+/* BRAIN FREEZE */
+
+function setupMemory(s) {
+  s.sequence = [Math.floor(Math.random() * 4)];
+  s.input = [];
+  s.round = 1;
+  s.maxRound = 7;
+  s.phase = "show";
+  s.showIndex = 0;
+  s.showTimer = .7;
+  s.activeTile = -1;
+  s.flashTimer = 0;
+  s.tiles = ["🍕", "🐸", "🌈", "🦆"];
+  s.tileRects = [];
+
+  setMessage("Watch the sequence, then repeat it.");
+}
+
+function updateMemory(s, dt) {
+  s.showTimer -= dt;
+
+  if (s.phase === "show" && s.showTimer <= 0) {
+    if (s.showIndex < s.sequence.length) {
+      s.activeTile = s.sequence[s.showIndex];
+      s.showIndex++;
+      s.phase = "flash";
+      s.flashTimer = .4;
+    } else {
+      s.activeTile = -1;
+      s.phase = "input";
+      setMessage("Your turn! Repeat the sequence in order.");
+    }
+  } else if (s.phase === "flash") {
+    s.flashTimer -= dt;
+
+    if (s.flashTimer <= 0) {
+      s.activeTile = -1;
+      s.phase = "show";
+      s.showTimer = .3;
+    }
+  }
+
+  drawMemory(s);
+}
+
+function drawMemory(s) {
+  const { ctx, W, H } = s;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#fff0a6";
+  ctx.fillRect(0, 0, W, H);
+  drawDots(ctx, W, H, "#ffffff88", 42);
+
+  ctx.fillStyle = "#252044";
+  ctx.textAlign = "center";
+  ctx.font = "bold 26px Fredoka";
+  ctx.fillText("ROUND " + s.round + " / " + s.maxRound, W / 2, 55);
+
+  const width = 170;
+  const height = 140;
+  const gap = 25;
+  const startX = (W - (width * 2 + gap)) / 2;
+
+  s.tileRects = [];
+
+  s.tiles.forEach((tile, i) => {
+    const x = startX + (i % 2) * (width + gap);
+    const y = 95 + Math.floor(i / 2) * (height + gap);
+
+    s.tileRects.push({ x, y, w: width, h: height, index: i });
+
+    ctx.fillStyle = s.activeTile === i
+      ? "#ffffff"
+      : ["#ffb4d0", "#b9a8ff", "#8be8a1", "#64d9ff"][i];
+
+    roundRect(ctx, x, y, width, height, 24);
+    ctx.fill();
+
+    ctx.lineWidth = s.activeTile === i ? 7 : 3;
+    ctx.strokeStyle = "#252044";
+    roundRect(ctx, x, y, width, height, 24);
+    ctx.stroke();
+
+    ctx.font = "57px sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#252044";
+    ctx.fillText(tile, x + width / 2, y + height / 2);
+  });
+
+  ctx.fillStyle = "#252044";
+  ctx.font = "bold 16px Nunito";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText(s.phase === "input" ? "YOUR TURN!" : "WATCH CAREFULLY...", W / 2, 455);
+}
+
+function memoryChoice(s, index) {
+  if (!s || s.id !== "memory" || s.over || s.phase !== "input") return;
+
+  const expected = s.sequence[s.input.length];
+
+  if (index !== expected) {
+    finishGame("Brain freeze! You reached round " + s.round + ".", false);
+    return;
+  }
+
+  s.input.push(index);
+
+  if (s.input.length === s.sequence.length) {
+    s.score += s.round * 10;
+    addCoin(s, 1);
+
+    if (s.round >= s.maxRound) {
+      s.score += 50;
+      finishGame("Your memory is terrifyingly good!", true);
       return;
     }
+
+    s.round++;
+    s.sequence.push(Math.floor(Math.random() * s.tiles.length));
+    s.input = [];
+    s.showIndex = 0;
+    s.phase = "show";
+    s.showTimer = .8;
+    s.activeTile = -1;
+
+    setMessage("Correct! Round " + s.round + " is longer. Stay focused.");
   }
-
-  if (s.crystals.every(c => c.taken)) {
-    s.score += 50;
-    s.mazeWon = true;
-
-    drawCrystalScene(s.ctx, w, h, s);
-    endGame(true, "You collected every crystal and escaped the maze!");
-    return;
-  }
-
-  updateParticles(s, dt);
-  drawCrystalScene(s.ctx, w, h, s);
 }
 
-function drawCrystalScene(ctx, w, h, s) {
-  ctx.fillStyle = "#071a1c";
-  ctx.fillRect(0, 0, w, h);
+/* SHARED GAME LOOP */
 
-  if (!s) {
-    ctx.fillStyle = "#153c40";
+function frame(now) {
+  if (!session || !session.running || session.over) return;
 
-    for (let y = 0; y < 11; y++) {
-      for (let x = 0; x < 12; x++) {
-        ctx.fillRect(130 + x * 54, 40 + y * 43, 49, 38);
-      }
-    }
+  const s = session;
+  const dt = Math.min(.035, Math.max(0, (now - s.last) / 1000));
+  s.last = now;
+  s.time += dt;
 
-    ctx.fillStyle = "#7df5b4";
-    ctx.font = "bold 38px sans-serif";
-    ctx.fillText("◇", 275, 110);
+  if (s.id === "lava") updateLava(s, dt);
+  if (s.id === "snack") updateSnack(s, dt);
+  if (s.id === "button") updateButton(s, dt);
+  if (s.id === "astro") updateAstro(s, dt);
+  if (s.id === "dash") updateDash(s, dt);
+  if (s.id === "memory") updateMemory(s, dt);
 
-    ctx.fillStyle = "#a68bff";
-    ctx.fillRect(180, 95, 23, 30);
-    return;
+  if (session && session.running && !session.over) {
+    setHUD(session.score, session.coins);
+    animationFrame = requestAnimationFrame(frame);
   }
+}
 
-  const cellW = Math.min(54, (w - 90) / 12);
-  const cellH = Math.min(43, (h - 50) / 11);
-  const ox = (w - cellW * 12) / 2;
-  const oy = (h - cellH * 11) / 2;
+function drawDots(ctx, width, height, color, step) {
+  ctx.fillStyle = color;
 
-  for (let y = 0; y < s.maze.length; y++) {
-    for (let x = 0; x < s.maze[y].length; x++) {
-      const wall = s.maze[y][x] === "#";
-      const px = ox + x * cellW;
-      const py = oy + y * cellH;
-
-      ctx.fillStyle = wall ? "#1b3545" : "#0b282b";
-      ctx.fillRect(px, py, cellW - 2, cellH - 2);
-
-      if (wall) {
-        ctx.fillStyle = "#315566";
-        ctx.fillRect(px, py, cellW - 2, 3);
-      }
+  for (let y = 10; y < height; y += step) {
+    for (let x = 10; x < width; x += step) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
-
-  for (const crystal of s.crystals) {
-    if (crystal.taken) continue;
-
-    const x = ox + (crystal.x + 0.5) * cellW;
-    const y = oy + (crystal.y + 0.5) * cellH;
-
-    ctx.fillStyle = "#7df5b4";
-    ctx.shadowColor = "#7df5b4";
-    ctx.shadowBlur = 13;
-    ctx.beginPath();
-    ctx.moveTo(x, y - 10);
-    ctx.lineTo(x + 8, y);
-    ctx.lineTo(x, y + 10);
-    ctx.lineTo(x - 8, y);
-    ctx.closePath();
-    ctx.fill();
-    ctx.shadowBlur = 0;
-  }
-
-  for (const enemy of s.enemies) {
-    const x = ox + (enemy.x + 0.5) * cellW;
-    const y = oy + (enemy.y + 0.5) * cellH;
-
-    ctx.fillStyle = "#ff579c";
-    ctx.shadowColor = "#ff579c";
-    ctx.shadowBlur = 12;
-    ctx.beginPath();
-    ctx.arc(x, y, 12, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-  }
-
-  const px = ox + (s.player.x + 0.5) * cellW;
-  const py = oy + (s.player.y + 0.5) * cellH;
-
-  ctx.fillStyle = "#a68bff";
-  ctx.shadowColor = "#a68bff";
-  ctx.shadowBlur = 15;
-  ctx.fillRect(px - 11, py - 13, 22, 26);
-  ctx.shadowBlur = 0;
-
-  drawParticles(ctx, s);
-
-  ctx.fillStyle = "#d1d9ed";
-  ctx.font = "14px sans-serif";
-  ctx.fillText(
-    "Crystals: " + s.crystals.filter(c => c.taken).length +
-    " / " + s.crystals.length,
-    20, 25
-  );
 }
 
-/* SESSION RESULTS AND ACHIEVEMENTS */
+function roundRect(ctx, x, y, width, height, radius) {
+  const r = Math.max(0, Math.min(radius, width / 2, height / 2));
 
-function endGame(won, message) {
-  const s = gameSession;
-
-  if (!s || s.ended) return;
-
-  s.ended = true;
-  s.running = false;
-  s.rewardPaid = true;
-
-  const score = Math.max(0, Math.floor(s.score));
-  const previousBest = state.bests[s.id] || 0;
-  const isNewBest = score > previousBest;
-
-  state.bests[s.id] = Math.max(previousBest, score);
-  state.gamesPlayed++;
-  state.completed += won ? 1 : 0;
-
-  const xpReward = Math.max(5, Math.floor(score / 3) + (won ? 25 : 0));
-  const coinReward = Math.max(2, Math.floor(s.coins) + (won ? 15 : 0));
-
-  state.xp += xpReward;
-  state.coins += coinReward;
-
-  const previousAchievements = new Set(state.achievements);
-
-  for (const achievement of ACHIEVEMENTS) {
-    if (
-      !previousAchievements.has(achievement.id) &&
-      achievement.check(state)
-    ) {
-      state.achievements.push(achievement.id);
-      state.coins += achievement.reward;
-      achievementQueue.push(achievement);
-    }
-  }
-
-  saveState();
-  renderAll();
-
-  $("overlayTitle").textContent = won ? "World completed!" : "Run over.";
-  $("overlayDescription").textContent =
-    message + " +" + xpReward + " XP and +" + coinReward + " coins." +
-    (isNewBest ? " New personal best!" : "");
-
-  $("startGame").textContent = "Play again →";
-  $("overlayMark").textContent = won ? "✦" : "↻";
-  $("gameOverlay").classList.remove("hidden");
-
-  if (soundEnabled) playTone(won ? 660 : 220, 0.15);
-
-  processAchievementQueue();
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
 }
 
-function checkAchievements() {
-  let changed = false;
+function drawCharacter(ctx, x, y, width, height, color, emoji) {
+  ctx.fillStyle = "#252044";
+  roundRect(ctx, x, y, width, height, 9);
+  ctx.fill();
 
-  for (const achievement of ACHIEVEMENTS) {
-    if (
-      !state.achievements.includes(achievement.id) &&
-      achievement.check(state)
-    ) {
-      state.achievements.push(achievement.id);
-      state.coins += achievement.reward;
-      achievementQueue.push(achievement);
-      changed = true;
-    }
-  }
+  ctx.fillStyle = color;
+  roundRect(ctx, x + 3, y + 3, Math.max(1, width - 6), Math.max(1, height - 6), 7);
+  ctx.fill();
 
-  if (changed) {
-    saveState();
-    renderAll();
-    processAchievementQueue();
-  } else {
-    renderAchievements();
-  }
+  ctx.font = Math.max(10, Math.min(height * .72, width * .75)) + "px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(emoji, x + width / 2, y + height / 2 + 1);
 }
 
-function processAchievementQueue() {
-  if (achievementBusy || achievementQueue.length === 0) return;
+/* NAVIGATION AND BUTTONS */
 
-  achievementBusy = true;
-  const achievement = achievementQueue.shift();
-
-  notify("Achievement unlocked: " + achievement.title +
-    " (+" + achievement.reward + " coins)");
-
-  setTimeout(() => {
-    achievementBusy = false;
-    processAchievementQueue();
-  }, 1000);
-}
-
-/* NAVIGATION AND INPUT */
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", event => {
+    event.preventDefault();
+    showPage(button.dataset.page);
+  });
+});
 
 document.addEventListener("click", event => {
-  const pageButton = event.target.closest("[data-page]");
-
-  if (pageButton) {
-    event.preventDefault();
-    showPage(pageButton.dataset.page);
-    return;
-  }
-
   const playButton = event.target.closest("[data-play]");
 
   if (playButton) {
-    enterGame(playButton.dataset.play);
-    return;
-  }
-
-  const favoriteButton = event.target.closest("[data-favorite]");
-
-  if (favoriteButton) {
-    toggleFavorite(favoriteButton.dataset.favorite);
+    launchGame(playButton.dataset.play);
     return;
   }
 
@@ -1441,214 +1618,207 @@ document.addEventListener("click", event => {
     activeFilter = filterButton.dataset.filter;
 
     document.querySelectorAll("[data-filter]").forEach(button => {
-      button.classList.toggle("selected", button === filterButton);
+      button.classList.toggle("active", button === filterButton);
     });
 
-    renderGameGrids();
+    renderLibrary();
+    return;
+  }
+
+  const claimButton = event.target.closest("[data-claim]");
+
+  if (claimButton) {
+    claimQuest(claimButton.dataset.claim);
+    return;
+  }
+
+  const switchButton = event.target.closest("[data-switch-game]");
+
+  if (switchButton) {
+    launchGame(switchButton.dataset.switchGame);
+    return;
+  }
+
+  const avatarButton = event.target.closest("[data-avatar]");
+
+  if (avatarButton) {
+    state.avatar = avatarButton.dataset.avatar;
+    saveState();
+    renderTop();
+    renderProfile();
   }
 });
 
-$("gameSearch").addEventListener("input", renderGameGrids);
+$("gameSearch").addEventListener("input", renderLibrary);
 
-document.addEventListener("keydown", event => {
-  if (
-    event.target.matches("input, textarea, select") ||
-    event.target.isContentEditable
-  ) {
-    return;
-  }
+$("clearSearch").addEventListener("click", () => {
+  $("gameSearch").value = "";
+  activeFilter = "all";
 
-  if (event.key === "/" && activePage === "games") {
-    event.preventDefault();
-    $("gameSearch").focus();
-    return;
-  }
+  document.querySelectorAll("[data-filter]").forEach(button => {
+    button.classList.toggle("active", button.dataset.filter === "all");
+  });
 
-  if (event.key === "Escape") {
-    if (!$("resetModal").classList.contains("hidden")) {
-      closeResetModal();
-      return;
-    }
-
-    if (activePage === "play") {
-      showPage("games");
-      return;
-    }
-
-    $("sidebar").classList.remove("open");
-    return;
-  }
-
-  const s = gameSession;
-
-  if (!s || !s.running || s.ended) return;
-
-  if (
-    ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)
-  ) {
-    event.preventDefault();
-  }
-
-  if (s.id === "runner") {
-    if (!event.repeat && ["ArrowUp", " ", "w", "W"].includes(event.key)) {
-      jumpRunner();
-    }
-    return;
-  }
-
-  if (s.id === "jumper") {
-    if (!event.repeat && ["ArrowUp", " ", "w", "W"].includes(event.key)) {
-      jumpJumper();
-    }
-
-    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-    s.keys.add(key);
-    return;
-  }
-
-  const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-  s.keys.add(key);
+  renderLibrary();
 });
 
-document.addEventListener("keyup", event => {
-  if (!gameSession) return;
-
-  const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-  gameSession.keys.delete(key);
-});
-
-window.addEventListener("blur", () => {
-  if (gameSession) gameSession.keys.clear();
-});
-
-$("gameCanvas").addEventListener("pointerdown", event => {
-  const s = gameSession;
-
-  if (!s || !s.running || s.ended) return;
-
-  if (s.id === "runner") {
-    jumpRunner();
-    return;
-  }
-
-  if (s.id === "jumper") {
-    const rect = s.canvas.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-
-    if (x < 0.35) {
-      s.keys.add("ArrowLeft");
-      setTimeout(() => {
-        if (gameSession === s) s.keys.delete("ArrowLeft");
-      }, 180);
-    } else if (x > 0.65) {
-      s.keys.add("ArrowRight");
-      setTimeout(() => {
-        if (gameSession === s) s.keys.delete("ArrowRight");
-      }, 180);
-    } else {
-      jumpJumper();
-    }
-
-    return;
-  }
-
-  const rect = s.canvas.getBoundingClientRect();
-  const x = (event.clientX - rect.left) / rect.width;
-  const y = (event.clientY - rect.top) / rect.height;
-
-  const dx = x - 0.5;
-  const dy = y - 0.5;
-
-  let key;
-
-  if (Math.abs(dx) > Math.abs(dy)) {
-    key = dx < 0 ? "ArrowLeft" : "ArrowRight";
-  } else {
-    key = dy < 0 ? "ArrowUp" : "ArrowDown";
-  }
-
-  s.keys.add(key);
-
-  setTimeout(() => {
-    if (gameSession === s) s.keys.delete(key);
-  }, 180);
-});
-
-/* PLAYER PROFILE */
+$("backToArcade").addEventListener("click", leaveGame);
+$("restartGame").addEventListener("click", startSession);
+$("playAgain").addEventListener("click", startSession);
+$("startButton").addEventListener("click", startSession);
 
 $("saveName").addEventListener("click", () => {
-  const name = $("playerName").value.trim();
+  const name = $("nameInput").value.trim().slice(0, 18);
 
   if (!name) {
-    notify("Enter a player name first.");
+    notify("Pick a name first.");
     return;
   }
 
-  state.name = name.slice(0, 18);
-
+  state.name = name;
   saveState();
-  renderAll();
-  notify("Player name updated.");
+  renderTop();
+  renderProfile();
+  notify("New name. Same chaos.");
 });
 
-$("playerName").addEventListener("keydown", event => {
+$("nameInput").addEventListener("keydown", event => {
   if (event.key === "Enter") {
     event.preventDefault();
     $("saveName").click();
   }
 });
 
-$("mobileMenu").addEventListener("click", () => {
-  $("sidebar").classList.toggle("open");
-});
+function claimQuest(id) {
+  const quest = QUESTS.find(item => item.id === id);
 
-$("startGame").addEventListener("click", startGame);
-$("restartGame").addEventListener("click", startGame);
-$("backToGames").addEventListener("click", () => showPage("games"));
-$("soundToggle").addEventListener("click", toggleSound);
+  if (!quest || state.claimed[id]) return;
 
-/* RESET CONFIRMATION */
+  if ((state.questProgress[id] || 0) < quest.goal) return;
 
-function closeResetModal() {
-  $("resetModal").classList.add("hidden");
+  state.claimed[id] = true;
+  state.coins += quest.reward;
+  state.xp += 15;
+
+  updateAchievements();
+  saveState();
+
+  renderTop();
+  renderQuests();
+  renderHomeQuests();
+  renderBadges($("homeBadges"));
+  notify("Quest complete! +" + quest.reward + " coins.");
 }
 
-$("resetProgress").addEventListener("click", () => {
-  $("resetModal").classList.remove("hidden");
-  $("cancelReset").focus();
+/* KEYBOARD CONTROLS */
+
+document.addEventListener("keydown", event => {
+  const gameKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "];
+
+  if (currentPage === "play" && gameKeys.includes(event.key)) {
+    event.preventDefault();
+  }
+
+  keys[event.key] = true;
+
+  if (event.repeat || currentPage !== "play" || !session || session.over) return;
+
+  if (session.id === "lava" && [" ", "ArrowUp", "w", "W"].includes(event.key)) {
+    jumpLava();
+  }
+
+  if (session.id === "dash") {
+    const number = Number(event.key);
+    if (number >= 1 && number <= 3) session.lane = number - 1;
+  }
+
+  if (session.id === "button" && ["1", "2", "3"].includes(event.key)) {
+    const button = session.buttons[Number(event.key) - 1];
+
+    if (button) {
+      buttonChoice(session, button.x + button.w / 2, button.y + button.h / 2);
+    }
+  }
 });
 
-$("cancelReset").addEventListener("click", closeResetModal);
-
-$("resetModal").addEventListener("click", event => {
-  if (event.target === $("resetModal")) closeResetModal();
+document.addEventListener("keyup", event => {
+  keys[event.key] = false;
 });
 
-$("confirmReset").addEventListener("click", () => {
-  stopSession();
+/* TOUCH AND POINTER CONTROLS */
 
-  state = freshState();
-  activeGame = null;
-  activeFilter = "all";
-  achievementQueue = [];
-  achievementBusy = false;
+$("stage").addEventListener("pointerdown", event => {
+  if (currentPage !== "play" || !session || session.over) return;
 
-  saveState();
-  closeResetModal();
+  const canvas = $("stage");
+  const rect = canvas.getBoundingClientRect();
+  const x = (event.clientX - rect.left) * canvas.width / rect.width;
+  const y = (event.clientY - rect.top) * canvas.height / rect.height;
 
-  $("gameSearch").value = "";
+  if (session.id === "lava") {
+    if (y > canvas.height * .65 && x < canvas.width * .4) {
+      keys.ArrowLeft = true;
+      pointerHeld = true;
+      return;
+    }
 
-  document.querySelectorAll("[data-filter]").forEach(button => {
-    button.classList.toggle("selected", button.dataset.filter === "all");
-  });
+    if (y > canvas.height * .65 && x > canvas.width * .6) {
+      keys.ArrowRight = true;
+      pointerHeld = true;
+      return;
+    }
 
-  renderAll();
-  showPage("home");
-  notify("Your local progress has been reset.");
+    jumpLava();
+  }
+
+  if (session.id === "button") {
+    buttonChoice(session, x, y);
+  }
+
+  if (session.id === "astro") {
+    astroLaunch(session, x, y);
+  }
+
+  if (session.id === "dash") {
+    const lane = Math.floor((y - 130) / 105);
+
+    if (lane >= 0 && lane < 3) {
+      session.lane = lane;
+    } else {
+      session.lane = Math.max(0, Math.min(2, Math.floor(x / canvas.width * 3)));
+    }
+  }
+
+  if (session.id === "memory") {
+    const tile = session.tileRects.find(item =>
+      x >= item.x && x <= item.x + item.w &&
+      y >= item.y && y <= item.y + item.h
+    );
+
+    if (tile) memoryChoice(session, tile.index);
+  }
 });
 
-/* STARTUP */
+function releasePointerControls() {
+  keys.ArrowLeft = false;
+  keys.ArrowRight = false;
+  pointerHeld = false;
+}
 
-renderAll();
-showPage("home");
-checkAchievements();
+$("stage").addEventListener("pointerup", releasePointerControls);
+$("stage").addEventListener("pointercancel", releasePointerControls);
+$("stage").addEventListener("pointerleave", releasePointerControls);
+
+window.addEventListener("blur", () => {
+  keys = {};
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) keys = {};
+});
+
+/* INITIALIZE */
+
+renderTop();
+renderHome();
+renderLibrary();
