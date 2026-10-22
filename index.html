@@ -3,187 +3,250 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090b16">
-  <title>alia-blox | Your Next World</title>
+  <meta name="theme-color" content="#090b14">
+  <meta name="description" content="alia-blox is your personal arcade universe. Explore worlds, play games, earn rewards and build your player profile.">
+  <title>alia-blox | Your Gaming Universe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-<div class="app-shell">
-  <aside class="sidebar">
-    <a href="#" class="brand" data-page="home">
-      <span class="brand-mark">a</span>
-      <span>alia-blox<small>YOUR NEXT WORLD</small></span>
-    </a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" data-page="home" aria-label="alia-blox home">
+        <span class="brand-mark">a<span>.</span></span>
+        <span class="brand-name">alia<span>-blox</span></span>
+      </a>
 
-    <div class="side-label">DISCOVER</div>
-    <button class="nav-item active" data-page="home"><span>⌂</span> Home</button>
-    <button class="nav-item" data-page="games"><span>▦</span> Game Library</button>
-    <button class="nav-item" data-page="favorites"><span>♡</span> Favorites</button>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-page="home"><span class="nav-icon">⌂</span>Home</button>
+        <button class="nav-item" data-page="games"><span class="nav-icon">▦</span>Discover games</button>
+        <button class="nav-item" data-page="favorites"><span class="nav-icon">♡</span>Favorites<span class="nav-count" id="favoriteCount">0</span></button>
+        <button class="nav-item" data-page="achievements"><span class="nav-icon">✧</span>Achievements</button>
+        <button class="nav-item" data-page="profile"><span class="nav-icon">◎</span>My profile</button>
+      </nav>
 
-    <div class="side-label">YOUR SPACE</div>
-    <button class="nav-item" data-page="profile"><span>◉</span> My Profile</button>
-    <button class="nav-item" data-page="achievements"><span>♜</span> Achievements</button>
-
-    <div class="sidebar-bottom">
-      <div class="upgrade-card">
-        <div class="upgrade-icon">✦</div>
-        <strong>Your universe awaits.</strong>
-        <p>Discover worlds, collect rewards, and beat your records.</p>
-        <button class="small-button" data-page="games">Explore worlds ↗</button>
+      <div class="side-label world-label">YOUR UNIVERSE</div>
+      <div class="sidebar-worlds">
+        <button class="world-link" data-play="runner"><span class="world-dot dot-pink"></span>Neon Odyssey</button>
+        <button class="world-link" data-play="jumper"><span class="world-dot dot-blue"></span>Skybound</button>
+        <button class="world-link" data-play="crystal"><span class="world-dot dot-green"></span>Crystal Quest</button>
       </div>
-      <div class="sidebar-footer">ALIA-BLOX WEB EDITION · 1.0</div>
-    </div>
-  </aside>
 
-  <main class="main-content">
-    <header class="topbar">
-      <button class="mobile-brand" data-page="home">alia-blox <span>✦</span></button>
-      <div class="breadcrumb"><span>EXPLORE</span><span>/</span><strong id="pageCrumb">Home</strong></div>
-      <div class="top-actions">
-        <button class="icon-button" id="soundToggle" title="Toggle sound" aria-label="Toggle sound">♫</button>
-        <div class="currency"><span>✦</span><b id="coinCount">0</b></div>
-        <button class="profile-chip" data-page="profile">
-          <span class="avatar" id="topAvatar">A</span>
-          <span id="topName">Player</span>
-          <span class="chevron">⌄</span>
-        </button>
-      </div>
-    </header>
+      <div class="sidebar-spacer"></div>
 
-    <section id="homePage" class="page">
-      <div class="welcome-row">
-        <div>
-          <div class="eyebrow"><span class="live-dot"></span> YOUR NEXT ADVENTURE STARTS HERE</div>
-          <h1>Ready to play,<br><span class="gradient-text">Player?</span></h1>
-          <p class="welcome-copy">Discover new worlds. Beat your records. Make every run count.</p>
+      <div class="sidebar-player">
+        <div class="avatar avatar-small" id="sideAvatar">P</div>
+        <div class="sidebar-player-info">
+          <strong id="sideName">Player</strong>
+          <span id="sideLevel">Level 1 explorer</span>
         </div>
-        <div class="level-card">
-          <div class="level-top"><span>YOUR PROGRESS</span><span id="levelLabel">LVL 1</span></div>
-          <div class="level-line"><div id="levelProgress"></div></div>
-          <div class="level-bottom"><span id="xpLabel">0 XP</span><span id="xpNext">100 XP to next level</span></div>
-        </div>
+        <button class="icon-button sidebar-settings" data-page="profile" aria-label="Profile settings">⚙</button>
       </div>
 
-      <div class="hero-banner">
-        <div class="hero-orb orb-one"></div>
-        <div class="hero-orb orb-two"></div>
-        <div class="hero-grid"></div>
-        <div class="hero-content">
-          <span class="pill"><span class="live-dot"></span> FEATURED WORLD</span>
-          <h2>NEON<br>ODYSSEY</h2>
-          <p>Dodge obstacles, collect energy, and see how far you can go.</p>
-          <button class="primary-button" data-play="runner">Play featured game <span>→</span></button>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <div class="planet-ring"></div>
-          <div class="planet"></div>
-          <div class="floating-cube cube-one"></div>
-          <div class="floating-cube cube-two"></div>
-          <div class="floating-cube cube-three"></div>
-          <span class="hero-coordinate">AB-07 / 2049</span>
-        </div>
-        <div class="hero-pagination"><span></span><i></i><i></i></div>
-      </div>
+      <div class="sidebar-footer">BUILT FOR YOUR NEXT ADVENTURE</div>
+    </aside>
 
-      <div class="section-heading">
-        <div><div class="eyebrow">PICK YOUR ADVENTURE</div><h2>Popular worlds <span class="muted">/ 03</span></h2></div>
-        <button class="text-button" data-page="games">View all worlds ↗</button>
-      </div>
-      <div class="game-grid" id="homeGameGrid"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb">
+          <button class="mobile-menu icon-button" id="mobileMenu" aria-label="Open navigation">☰</button>
+          <span class="breadcrumb-muted">alia-blox</span>
+          <span class="breadcrumb-divider">/</span>
+          <span id="pageCrumb">Home</span>
+        </div>
+        <div class="topbar-right">
+          <div class="currency-pill"><span class="coin-icon">◆</span><span id="coinCount">0</span><span class="currency-name">COINS</span></div>
+          <button class="top-profile" data-page="profile" aria-label="Open profile">
+            <span class="avatar avatar-top" id="topAvatar">P</span>
+            <span id="topName">Player</span>
+            <span class="profile-chevron">⌄</span>
+          </button>
+        </div>
+      </header>
 
-      <div class="bottom-grid">
-        <section class="panel">
-          <div class="panel-heading"><div><div class="eyebrow">JUMP BACK IN</div><h3>Continue playing</h3></div><span class="panel-icon">↗</span></div>
-          <div id="continueContent"></div>
-        </section>
-        <section class="panel">
-          <div class="eyebrow">YOUR JOURNEY SO FAR</div>
-          <h3>Player statistics</h3>
-          <div class="stat-list">
-            <div><span>Worlds played</span><strong id="worldStat">0</strong></div>
-            <div><span>Total games played</span><strong id="gameStat">0</strong></div>
-            <div><span>Personal bests</span><strong id="bestStat">0</strong></div>
+      <div class="content-wrap">
+        <section class="page" id="homePage">
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="live-dot"></span> YOUR PERSONAL UNIVERSE</div>
+              <h1>Ready to <span class="gradient-text">play?</span></h1>
+              <p class="page-subtitle">Your next adventure is only one click away.</p>
+            </div>
+            <div class="date-chip"><span class="date-spark">✳</span> PLAYER DASHBOARD</div>
           </div>
+
+          <section class="hero-banner">
+            <div class="hero-grid"></div>
+            <div class="hero-content">
+              <span class="hero-tag"><span class="tag-dot"></span> FEATURED EXPERIENCE</span>
+              <h2>Enter the<br><span>unknown.</span></h2>
+              <p>Three worlds. Endless challenges. Your own universe to explore.</p>
+              <button class="primary-button" data-play="runner">Explore Neon Odyssey <span>↗</span></button>
+              <div class="hero-footnote"><span class="hero-mini-dot"></span> YOUR ADVENTURE STARTS HERE</div>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+              <div class="orbit orbit-one"></div>
+              <div class="orbit orbit-two"></div>
+              <div class="orbit orbit-three"></div>
+              <div class="hero-core"><span>a.</span></div>
+              <div class="floating-cube cube-one"></div>
+              <div class="floating-cube cube-two"></div>
+              <div class="floating-cube cube-three"></div>
+              <div class="hero-star star-one">✦</div>
+              <div class="hero-star star-two">✧</div>
+              <div class="hero-star star-three">·</div>
+            </div>
+            <div class="hero-index">AB / 001</div>
+          </section>
+
+          <section class="stats-grid" aria-label="Player statistics">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-icon purple-icon">↗</span><span class="stat-caption">PROGRESSION</span></div>
+              <div class="stat-value" id="homeLevel">1</div>
+              <div class="stat-description">Player level</div>
+              <div class="mini-progress"><span id="homeLevelProgress"></span></div>
+              <div class="stat-foot" id="homeXP">0 / 100 XP</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-icon yellow-icon">◆</span><span class="stat-caption">CURRENCY</span></div>
+              <div class="stat-value" id="homeCoins">0</div>
+              <div class="stat-description">Coins collected</div>
+              <div class="stat-foot">Earn more by playing</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-icon pink-icon">▣</span><span class="stat-caption">EXPERIENCE</span></div>
+              <div class="stat-value" id="homeGames">0</div>
+              <div class="stat-description">Games completed</div>
+              <div class="stat-foot">Every run counts</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-icon green-icon">✧</span><span class="stat-caption">DISCOVERY</span></div>
+              <div class="stat-value"><span id="homeWorlds">0</span><span class="stat-total">/ 3</span></div>
+              <div class="stat-description">Worlds discovered</div>
+              <div class="stat-foot">Explore the universe</div>
+            </article>
+          </section>
+
+          <section class="section-block">
+            <div class="section-heading">
+              <div><div class="eyebrow">PICK YOUR NEXT WORLD</div><h2>Featured games</h2></div>
+              <button class="text-button" data-page="games">View all games <span>→</span></button>
+            </div>
+            <div class="game-grid" id="homeGameGrid"></div>
+          </section>
+
+          <section class="section-block lower-home-grid">
+            <article class="panel continue-panel">
+              <div class="panel-heading"><div><div class="eyebrow">PICK UP WHERE YOU LEFT OFF</div><h2>Jump back in</h2></div><span class="panel-symbol">↗</span></div>
+              <div id="continueContent"></div>
+            </article>
+            <article class="panel level-panel">
+              <div class="panel-heading"><div><div class="eyebrow">YOUR PROGRESS</div><h2>Level progression</h2></div><span class="panel-symbol">↑</span></div>
+              <div class="level-row"><div class="avatar level-avatar" id="levelAvatar">P</div><div class="level-player"><strong id="levelPlayerName">Player</strong><span id="levelPlayerText">Level 1</span></div><span class="level-number" id="levelNumber">LV. 1</span></div>
+              <div class="progress-track"><span id="levelProgress"></span></div>
+              <div class="progress-labels"><span id="xpLabel">0 XP</span><span id="xpNext">100 XP to next level</span></div>
+              <button class="secondary-button full-button" data-page="achievements">View achievements →</button>
+            </article>
+          </section>
+
+          <footer class="page-footer"><span>ALIA-BLOX © 2026</span><span>MADE FOR EXPLORERS</span></footer>
+        </section>
+
+        <section class="page hidden" id="gamesPage">
+          <div class="page-heading-row">
+            <div><div class="eyebrow">THE ARCADE</div><h1>Game <span class="gradient-text">library.</span></h1><p class="page-subtitle">Find a world that matches your mood.</p></div>
+            <div class="library-total"><strong id="libraryCount">3</strong><span>WORLDS AVAILABLE</span></div>
+          </div>
+          <div class="library-toolbar">
+            <label class="search-box"><span>⌕</span><input id="gameSearch" type="search" placeholder="Search worlds..." autocomplete="off" aria-label="Search games"><kbd>/</kbd></label>
+            <div class="filter-list" aria-label="Filter games">
+              <button class="filter-button selected" data-filter="all">All games</button>
+              <button class="filter-button" data-filter="arcade">Arcade</button>
+              <button class="filter-button" data-filter="skill">Skill</button>
+            </div>
+          </div>
+          <div class="game-grid library-grid" id="libraryGameGrid"></div>
+          <div class="empty-state hidden" id="noGames"><span>⌕</span><h3>No worlds found</h3><p>Try another search or category.</p></div>
+          <footer class="page-footer"><span>ALIA-BLOX © 2026</span><span>EXPLORE SOMETHING NEW</span></footer>
+        </section>
+
+        <section class="page hidden" id="favoritesPage">
+          <div class="page-heading-row"><div><div class="eyebrow">YOUR PERSONAL COLLECTION</div><h1>Saved <span class="gradient-text">worlds.</span></h1><p class="page-subtitle">Your favorite adventures, all in one place.</p></div><div class="library-total"><strong id="favoritesTotal">0</strong><span>SAVED WORLDS</span></div></div>
+          <div class="game-grid" id="favoriteGameGrid"></div>
+          <div class="empty-state hidden" id="noFavorites"><span>♡</span><h3>Your collection is waiting</h3><p>Save a game using the heart button to find it here.</p><button class="primary-button" data-page="games">Discover games →</button></div>
+          <footer class="page-footer"><span>ALIA-BLOX © 2026</span><span>YOUR WORLD, YOUR RULES</span></footer>
+        </section>
+
+        <section class="page hidden" id="achievementsPage">
+          <div class="page-heading-row"><div><div class="eyebrow">MILESTONES & REWARDS</div><h1>Achievement <span class="gradient-text">room.</span></h1><p class="page-subtitle">Every challenge brings you closer to the next milestone.</p></div><div class="achievement-counter"><strong id="achievementCount">0 / 8</strong><span>UNLOCKED</span></div></div>
+          <div class="achievement-summary panel"><div class="summary-emblem">✧</div><div class="summary-text"><strong id="achievementSummary">Your journey starts here.</strong><span>Play games, collect coins, and discover all the worlds.</span></div><div class="summary-progress"><div class="progress-track"><span id="achievementProgress"></span></div><span id="achievementPercent">0% complete</span></div></div>
+          <div class="achievement-grid" id="achievementGrid"></div>
+          <footer class="page-footer"><span>ALIA-BLOX © 2026</span><span>KEEP MOVING FORWARD</span></footer>
+        </section>
+
+        <section class="page hidden" id="profilePage">
+          <div class="page-heading-row"><div><div class="eyebrow">PLAYER IDENTITY</div><h1>Your <span class="gradient-text">profile.</span></h1><p class="page-subtitle">Your stats, your progress, your universe.</p></div><span class="profile-id">PLAYER / 001</span></div>
+          <div class="profile-banner panel">
+            <div class="profile-glow"></div>
+            <div class="avatar profile-avatar" id="profileAvatar">P</div>
+            <div class="profile-main"><div class="eyebrow">EXPLORER PROFILE</div><h2 id="profileDisplayName">Player</h2><p id="profileLevel">Level 1 explorer</p><div class="profile-badges"><span>✧ ALIA-BLOX MEMBER</span><span id="profileWorldBadge">0 WORLDS</span></div></div>
+            <div class="profile-xp"><span>TOTAL EXPERIENCE</span><strong id="profileXP">0</strong><span>XP EARNED</span></div>
+          </div>
+          <div class="section-heading profile-section-heading"><div><div class="eyebrow">ACCOUNT SETTINGS</div><h2>Player details</h2></div></div>
+          <div class="panel settings-panel">
+            <label class="field-label" for="playerName">Display name</label>
+            <div class="name-form"><input id="playerName" type="text" maxlength="18" placeholder="Enter your player name" autocomplete="nickname"><button class="primary-button" id="saveName">Save changes</button></div>
+            <p class="field-hint">Choose a name with up to 18 characters. Your progress stays saved in this browser.</p>
+          </div>
+          <div class="profile-stat-grid">
+            <div class="stat-card"><div class="stat-caption">TOTAL COINS</div><div class="stat-value" id="profileCoins">0</div><div class="stat-description">Collected across your adventures</div></div>
+            <div class="stat-card"><div class="stat-caption">GAMES PLAYED</div><div class="stat-value" id="profileGames">0</div><div class="stat-description">Completed and recorded runs</div></div>
+            <div class="stat-card"><div class="stat-caption">WORLDS DISCOVERED</div><div class="stat-value" id="profileWorlds">0</div><div class="stat-description">Unique worlds explored</div></div>
+          </div>
+          <div class="panel data-panel"><div><h3>Local save data</h3><p>Your player information is stored in this browser, not on an online account.</p></div><button class="secondary-button" id="resetProgress">Reset progress</button></div>
+          <footer class="page-footer"><span>ALIA-BLOX © 2026</span><span>PLAYER PROFILE</span></footer>
+        </section>
+
+        <section class="page hidden" id="playPage">
+          <div class="play-topline"><button class="back-button" id="backToGames">← Back to library</button><span class="playing-indicator"><span class="live-dot"></span> GAME SESSION</span><button class="icon-button sound-button" id="soundToggle" aria-label="Toggle sound effects" title="Toggle sound effects">♫</button></div>
+          <div class="playing-heading"><div><div class="eyebrow" id="gameCategory">ARCADE</div><h1 id="activeGameTitle">Neon Odyssey</h1><p class="page-subtitle" id="activeGameDescription">Your adventure awaits.</p></div><div class="live-best"><span>PERSONAL BEST</span><strong id="liveBest">0</strong></div></div>
+          <div class="game-stage">
+            <div class="stage-topbar"><span><span class="stage-live-dot"></span> <span id="stageName">WORLD 01</span></span><span>ALIA-BLOX ENGINE <span class="engine-version">/ 1.0</span></span></div>
+            <div class="canvas-wrap">
+              <canvas id="gameCanvas" width="960" height="540" aria-label="Playable game area">Your browser does not support the HTML canvas.</canvas>
+              <div class="game-overlay" id="gameOverlay">
+                <div class="overlay-mark" id="overlayMark">a.</div>
+                <div class="overlay-eyebrow">WORLD READY</div>
+                <h2 id="overlayTitle">Enter Neon Odyssey.</h2>
+                <p id="overlayDescription">Your next adventure starts now.</p>
+                <button class="primary-button" id="startGame">Start playing →</button>
+                <span class="overlay-controls" id="overlayControls">SPACE / ARROWS / TAP</span>
+              </div>
+            </div>
+            <div class="stage-hud">
+              <div class="hud-item"><span class="hud-icon">◈</span><div><span>SCORE</span><strong id="liveScore">0</strong></div></div>
+              <div class="hud-item"><span class="hud-icon gold-hud">◆</span><div><span>COLLECTED</span><strong id="liveCoins">0</strong></div></div>
+              <div class="hud-item"><span class="hud-icon pink-hud">✦</span><div><span>BEST SCORE</span><strong id="stageBest">0</strong></div></div>
+              <button class="secondary-button restart-button" id="restartGame">↻ Restart</button>
+            </div>
+          </div>
+          <div class="play-info-grid">
+            <article class="panel"><div class="eyebrow">YOUR MISSION</div><h3 id="missionTitle">Neon Odyssey</h3><p id="missionText">Survive as long as possible.</p></article>
+            <article class="panel"><div class="eyebrow">HOW TO PLAY</div><h3>Controls & tips</h3><p id="gameTip">Use the keyboard to play.</p><div class="control-chip" id="controlText">SPACE / TAP</div></article>
+          </div>
+          <footer class="page-footer"><span>ALIA-BLOX © 2026</span><span>GOOD LUCK, EXPLORER</span></footer>
         </section>
       </div>
-    </section>
+    </main>
+  </div>
 
-    <section id="gamesPage" class="page hidden">
-      <div class="page-intro"><div class="eyebrow">THE MULTIVERSE</div><h1>Find your <span class="gradient-text">next world.</span></h1><p>Different games, different challenges. Pick your universe.</p></div>
-      <div class="filter-row">
-        <div class="search-wrap"><span>⌕</span><input id="gameSearch" type="search" placeholder="Search games..." autocomplete="off"></div>
-        <div class="filter-buttons">
-          <button class="filter-button selected" data-filter="all">All worlds</button>
-          <button class="filter-button" data-filter="arcade">Arcade</button>
-          <button class="filter-button" data-filter="skill">Skill</button>
-        </div>
-      </div>
-      <div class="game-grid library-grid" id="libraryGameGrid"></div>
-      <p class="empty-message hidden" id="noGames">No worlds match your search.</p>
-    </section>
-
-    <section id="favoritesPage" class="page hidden">
-      <div class="page-intro"><div class="eyebrow">YOUR COLLECTION</div><h1>Favorite <span class="gradient-text">worlds.</span></h1><p>Your saved games, all in one place.</p></div>
-      <div class="game-grid" id="favoriteGameGrid"></div>
-      <p class="empty-message hidden" id="noFavorites">No favorites yet. Save a world using its heart button.</p>
-    </section>
-
-    <section id="profilePage" class="page hidden">
-      <div class="page-intro"><div class="eyebrow">YOUR IDENTITY</div><h1>Player <span class="gradient-text">profile.</span></h1><p>Your corner of the alia-blox universe.</p></div>
-      <div class="profile-layout">
-        <div class="panel profile-main">
-          <div class="profile-cover"></div>
-          <div class="profile-avatar" id="profileAvatar">A</div>
-          <div class="profile-details"><span class="pill">PLAYER ACCOUNT</span><h2 id="profileDisplayName">Player</h2><p id="profileLevel">Level 1 explorer</p></div>
-          <label class="field-label" for="playerName">DISPLAY NAME</label>
-          <div class="name-edit"><input id="playerName" maxlength="18" placeholder="Enter a player name"><button class="primary-button" id="saveName">Save name</button></div>
-          <p class="form-note">Progress is saved in this browser on this device.</p>
-        </div>
-        <div class="panel"><div class="eyebrow">PLAYER RECORD</div><h3>Statistics</h3>
-          <div class="stat-list">
-            <div><span>Total XP</span><strong id="profileXP">0</strong></div>
-            <div><span>Coins collected</span><strong id="profileCoins">0</strong></div>
-            <div><span>Games played</span><strong id="profileGames">0</strong></div>
-            <div><span>Worlds discovered</span><strong id="profileWorlds">0</strong></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="achievementsPage" class="page hidden">
-      <div class="page-intro"><div class="eyebrow">MILESTONES & RECORDS</div><h1>Hall of <span class="gradient-text">achievements.</span></h1><p>Every run counts. Every new record matters.</p></div>
-      <div class="achievement-grid" id="achievementGrid"></div>
-    </section>
-
-    <section id="playPage" class="page hidden">
-      <div class="play-topline"><button class="text-button" id="backToGames">← Back to worlds</button><span class="pill" id="gameCategory">ARCADE</span></div>
-      <div class="play-heading">
-        <div><div class="eyebrow">NOW ENTERING</div><h1 id="activeGameTitle">NEON ODYSSEY</h1><p id="activeGameDescription"></p></div>
-        <button class="secondary-button" id="restartGame">↻ Restart</button>
-      </div>
-      <div class="game-stage">
-        <canvas id="gameCanvas" width="960" height="540" aria-label="Playable game area"></canvas>
-        <div class="canvas-overlay" id="gameOverlay">
-          <div class="overlay-card"><div class="eyebrow">WORLD READY</div><h2 id="overlayTitle">Enter the world.</h2><p id="overlayDescription">Your next challenge is waiting.</p><button class="primary-button" id="startGame">Start playing →</button></div>
-        </div>
-      </div>
-      <div class="game-hud">
-        <div class="hud-box"><span>YOUR SCORE</span><strong id="liveScore">0</strong></div>
-        <div class="hud-box"><span>PERSONAL BEST</span><strong id="liveBest">0</strong></div>
-        <div class="hud-box"><span>COINS EARNED</span><strong id="liveCoins">0</strong></div>
-        <div class="hud-box control-hint"><span>CONTROLS</span><strong id="controlText">WASD / ARROWS</strong></div>
-      </div>
-      <div class="play-info-grid">
-        <div class="panel"><div class="eyebrow">MISSION BRIEF</div><h3 id="missionTitle">The challenge</h3><p id="missionText">Complete the challenge to earn XP and coins.</p></div>
-        <div class="panel"><div class="eyebrow">QUICK TIP</div><h3>Stay sharp.</h3><p id="gameTip">Learn the pattern and keep moving.</p></div>
-      </div>
-    </section>
-
-    <footer class="main-footer"><span>alia-blox © 2026</span><span>BUILT FOR THE NEXT GENERATION OF PLAY.</span></footer>
-  </main>
-</div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="script.js"></script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop hidden" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
+    <div class="confirm-modal"><div class="modal-mark">!</div><h2 id="resetTitle">Reset your progress?</h2><p>This permanently clears your local coins, XP, records, favorites, and achievements from this browser.</p><div class="modal-actions"><button class="secondary-button" id="cancelReset">Keep progress</button><button class="danger-button" id="confirmReset">Reset everything</button></div></div>
+  </div>
 </body>
 </html>
